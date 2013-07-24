@@ -179,16 +179,20 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 						View.Model.SelectedPost = objPost;
 						View.ShowAuditControl(true);
 
+						var _groupLink = Request.QueryString["groupid"] ?? "0";
 						if (objPost.ParentId > 0)
 						{
 							View.ShowQuestionSpecific(false);
 							var objQuestion = Controller.GetPost(objPost.ParentId, ModuleContext.PortalId);
-							View.Model.QuestionUrl = Links.ViewQuestion(objQuestion.PostId, objQuestion.Title, ModuleContext.PortalSettings.ActiveTab, ModuleContext.PortalSettings);
+
+							View.Model.QuestionUrl = Links.ViewQuestion(objQuestion.PostId, objQuestion.Title, ModuleContext.PortalSettings.ActiveTab,
+								ModuleContext.PortalSettings, _groupLink == "0" ? 0 : int.Parse(_groupLink));
 						}
 						else
 						{
 							View.ShowQuestionSpecific(true);
-							View.Model.QuestionUrl = Links.ViewQuestion(objPost.PostId, objPost.Title, ModuleContext.PortalSettings.ActiveTab, ModuleContext.PortalSettings);
+							View.Model.QuestionUrl = Links.ViewQuestion(objPost.PostId, objPost.Title, ModuleContext.PortalSettings.ActiveTab,
+								ModuleContext.PortalSettings, _groupLink == "0" ? 0 : int.Parse(_groupLink));
 						}
 
 						// change from just iseditable?
@@ -283,10 +287,12 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 				if (objEntry != null)
 				{
 					Controller.DeletePost(PostId, objEntry.ParentId, ModuleContext.PortalId, objEntry.ContentItemId, true, ModuleContext.ModuleId);
+
+					var _groupLink = Request.QueryString["groupid"] ?? "0";
 					Response.Redirect(
 						View.Model.SelectedPost.ParentId == 0
-							? Links.Home(ModuleContext.TabId)
-							: Links.ViewQuestion(View.Model.SelectedPost.ParentId, ModuleContext.TabId, ModuleContext.PortalSettings),
+							? Links.Home(ModuleContext.TabId, int.Parse(_groupLink))
+							: Links.ViewQuestion(View.Model.SelectedPost.ParentId, ModuleContext.TabId, ModuleContext.PortalSettings, _groupLink == "0" ? 0 : int.Parse(_groupLink)),
 						false);
 				}
 			}
@@ -457,14 +463,18 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 			
 				string questionUrl;
 
+				var _groupLink = Request.QueryString["groupid"] ?? "0";
+
 				if (e.Post.ParentId > 0)
 				{
 					var objQuestion = Controller.GetQuestion(e.Post.PostId, ModuleContext.PortalId);
-					questionUrl = Links.ViewQuestion(objQuestion.PostId, objQuestion.Title, ModuleContext.PortalSettings.ActiveTab, ModuleContext.PortalSettings);
+					questionUrl = Links.ViewQuestion(objQuestion.PostId, objQuestion.Title, ModuleContext.PortalSettings.ActiveTab,
+						ModuleContext.PortalSettings, _groupLink == "0" ? 0 : int.Parse(_groupLink));
 				}
 				else
 				{
-					questionUrl = Links.ViewQuestion(e.Post.PostId, e.Post.Title, ModuleContext.PortalSettings.ActiveTab, ModuleContext.PortalSettings);
+					questionUrl = Links.ViewQuestion(e.Post.PostId, e.Post.Title, ModuleContext.PortalSettings.ActiveTab, ModuleContext.PortalSettings
+						, _groupLink == "0" ? 0 : int.Parse(_groupLink));
 				}
 
 				Response.Redirect(questionUrl, false);

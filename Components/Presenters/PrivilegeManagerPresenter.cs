@@ -38,7 +38,15 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 	/// </summary>
 	public class PrivilegeManagerPresenter : ModulePresenter<IPrivilegeManagerView, PrivilegeManagerModel>
 	{
+		#region Private Members
 
+		private int GroupId
+		{
+			get { return (Request.QueryString["groupid"] == null) ? 0 : int.Parse(Request.QueryString["groupid"].ToString()); }
+		}
+
+		#endregion
+		
 		#region Members
 
 		protected IDnnqaController Controller { get; private set; }
@@ -177,7 +185,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 			DataCache.RemoveCache(Constants.ModuleCacheKey + Constants.QaSettingsCacheKey + ModuleContext.PortalId);
 
 			// Redirect User
-			Response.Redirect(Links.Home(ModuleContext.TabId), false);
+			Response.Redirect(Links.Home(ModuleContext.TabId,GroupId), false);
 		}
 
 		#endregion

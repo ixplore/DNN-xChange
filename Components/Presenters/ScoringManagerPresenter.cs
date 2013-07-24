@@ -39,6 +39,15 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 	public class ScoringManagerPresenter : ModulePresenter<IScoringManagerView, ScoringManagerModel>
 	{
 
+		#region Private Members
+
+		private int GroupId
+		{
+			get { return (Request.QueryString["groupid"] == null) ? 0 : int.Parse(Request.QueryString["groupid"].ToString()); }
+		}
+
+		#endregion
+
 		#region Members
 
 		protected IDnnqaController Controller { get; private set; }
@@ -235,7 +244,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 			// Clear settings cache (for this collection) 
 			DataCache.RemoveCache(Constants.ModuleCacheKey + Constants.QaSettingsCacheKey + ModuleContext.PortalId);
 
-			Response.Redirect(Links.Home(ModuleContext.TabId), false);
+			Response.Redirect(Links.Home(ModuleContext.TabId,GroupId), false);
 		}
 
 		#endregion

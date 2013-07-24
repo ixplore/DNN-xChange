@@ -74,6 +74,11 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 			get { return 1; }
 		}
 
+		private int GroupId
+		{
+			get { return (Request.QueryString["groupid"] == null) ? 0 : int.Parse(Request.QueryString["groupid"].ToString()); }
+		}
+
 		#endregion
 
 		#region Constructors
@@ -130,7 +135,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 				if (urlTerm != null)
 				{
 					View.Model.SelectedTerm =
-					(from t in Controller.GetTermsByContentType(ModuleContext.PortalId, ModuleContext.ModuleId, VocabularyId)
+					(from t in Controller.GetTermsByContentType(ModuleContext.PortalId, ModuleContext.ModuleId, VocabularyId, GroupId)
 					 where t.Name.ToLower() == Tag.ToLower()
 					 select t).SingleOrDefault();
 

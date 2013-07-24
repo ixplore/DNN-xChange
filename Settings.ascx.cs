@@ -86,6 +86,7 @@ namespace DotNetNuke.DNNQA {
 													   : Constants.DefaultPageSize;
 						dnntAnswerPageSize.Value = Settings.ContainsKey(Constants.SettingAnswerPageSize) ? Convert.ToInt32(Settings[Constants.SettingAnswerPageSize]) : Constants.DefaultPageSize;
 						dnntMaxTagsTags.Value = Settings.ContainsKey(Constants.SettingMaxTagsTags) ? Convert.ToInt32(Settings[Constants.SettingMaxTagsTags]) : Constants.DefaultPageSize;
+						dntxtbxCacheTimeout.Value = Settings.ContainsKey(Constants.SettingsCacheTimeout) ? Convert.ToInt32(Settings[Constants.SettingsCacheTimeout]) : Constants.DefaultCacheTimeout;
 
 						if (Settings.ContainsKey(Constants.SettingsFacebookAppId))
 						{
@@ -154,6 +155,7 @@ namespace DotNetNuke.DNNQA {
 			objModule.UpdateModuleSetting(ModuleId, Constants.SettingsEnablePlusOne, chkEnablePlusOne.Checked.ToString());
 			objModule.UpdateModuleSetting(ModuleId, Constants.SettingsEnableTwitter, chkEnableTwitter.Checked.ToString());
 			objModule.UpdateModuleSetting(ModuleId, Constants.SettingsEnableLinkedIn, chkEnableLinkedIn.Checked.ToString());
+			objModule.UpdateModuleSetting(ModuleId, Constants.SettingsCacheTimeout, dntxtbxCacheTimeout.Text);
 
 			UpdateQaPortalSettings();
 		}

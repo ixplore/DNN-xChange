@@ -44,6 +44,15 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 	public class EditTermPresenter : ModulePresenter<IEditTermView, EditTermModel>
 	{
 
+		#region Private Members
+
+		private int GroupId
+		{
+			get { return (Request.QueryString["groupid"] == null) ? 0 : int.Parse(Request.QueryString["groupid"]); }
+		}
+
+		#endregion
+		
 		#region Members
 
 		protected IDnnqaController Controller { get; private set; }
@@ -235,7 +244,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 
 				Controller.AddScoringLog(objScoreLog, PrivilegeCollection);
 
-				Response.Redirect(Links.ViewTagDetail(ModuleContext, ModuleContext.TabId, View.Model.SelectedTerm.Name), false);
+				Response.Redirect(Links.ViewTagDetail(ModuleContext, ModuleContext.TabId, View.Model.SelectedTerm.Name, GroupId), false);
 
 			}
 			catch (Exception exception)

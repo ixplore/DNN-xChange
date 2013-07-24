@@ -41,6 +41,14 @@ namespace DotNetNuke.DNNQA
 	[PresenterBinding(typeof(TagDetailPresenter))]
 	public partial class TagDetail : ModuleView<TagDetailModel>, ITagDetailView
 	{
+		#region Private Members
+
+		private int GroupId
+		{
+			get { return (Request.QueryString["groupid"] == null) ? 0 : int.Parse(Request.QueryString["groupid"]); }
+		}
+
+		#endregion
 
 		#region Public Events
 
@@ -69,7 +77,7 @@ namespace DotNetNuke.DNNQA
 		{
 			base.OnLoad(e);
 
-			Utils.SetTermPageMeta((CDefault)Page, Model.SelectedTerm, ModuleContext, Model.PageTitle, Model.PageDescription);
+			Utils.SetTermPageMeta((CDefault)Page, Model.SelectedTerm, ModuleContext, Model.PageTitle, Model.PageDescription, GroupId);
 		}
 
 		/// <summary>
@@ -158,10 +166,10 @@ namespace DotNetNuke.DNNQA
 		public void Refresh()
 		{
 			dgqHeaderNav.ModContext = ModuleContext;
-			hlEdit.NavigateUrl = Links.EditTag(ModuleContext, ModuleContext.TabId, Model.SelectedTerm.Name);
+			hlEdit.NavigateUrl = Links.EditTag(ModuleContext, ModuleContext.TabId, Model.SelectedTerm.Name, GroupId);
 			hlHistory.NavigateUrl = Links.ViewTagHistory(ModuleContext, Model.SelectedTerm.Name);
 			hlSynonym.NavigateUrl = Links.ViewTermSynonyms(ModuleContext, Model.SelectedTerm.Name);
-			hlAbout.NavigateUrl = Links.ViewTagDetail(ModuleContext, ModuleContext.TabId, Model.SelectedTerm.Name);
+			hlAbout.NavigateUrl = Links.ViewTagDetail(ModuleContext, ModuleContext.TabId, Model.SelectedTerm.Name, GroupId);
 
 			if (Model.ActiveTermSynonyms.Count > 0)
 			{

@@ -1,6 +1,6 @@
 <dotnetnuke type="Package" version="5.0">
 	<packages>
-		<package name="DNNQA" type="Module" version="01.01.01">
+		<package name="DNNQA" type="Module" version="01.02.00">
 			<friendlyname>DNN Q and A</friendlyname>
 			<description>A DotNetNuke Questions and Answers module.</description>
 			<iconFile>~/DesktopModules/DNNQA/images/QandA.png</iconFile>
@@ -80,7 +80,7 @@
 						<assembly>
 							<name>DotNetNuke.Modules.DNNQA.dll</name>
 							<sourceFileName>DotNetNuke.Modules.DNNQA.dll</sourceFileName>
-							<version>01.01.01</version>
+							<version>01.02.00</version>
 						</assembly>
 					</assemblies>
 				</component>
@@ -121,6 +121,10 @@
 						<script type="Install">
 							<name>01.01.01.SqlDataProvider</name>
 							<version>01.01.01</version>
+						</script>
+						<script type="Install">
+							<name>01.02.00.SqlDataProvider</name>
+							<version>01.02.00</version>
 						</script>
 						<script type="UnInstall">
 							<name>Uninstall.SqlDataProvider</name>

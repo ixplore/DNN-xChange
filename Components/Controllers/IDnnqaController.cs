@@ -30,7 +30,7 @@ namespace DotNetNuke.DNNQA.Components.Controllers {
 	/// </summary>
 	public interface IDnnqaController
 	{
-
+		int QACacheTimout { get; set; }
 		//#region Badges
 
 		//int AddBadge(BadgeInfo objBadge);
@@ -67,7 +67,7 @@ namespace DotNetNuke.DNNQA.Components.Controllers {
 
 		#region Posts
 
-		List<QuestionInfo> GetHomeQuestions(int moduleId, int pageSize, int excludeCount, int minScore);
+		List<QuestionInfo> GetHomeQuestions(int moduleId, int pageSize, int excludeCount, int minScore, int groupId);
 
 		#region User
 
@@ -77,13 +77,13 @@ namespace DotNetNuke.DNNQA.Components.Controllers {
 
 		List<QuestionInfo> SearchByUser(int portalId, int userId);
 
-		List<QuestionInfo> KeywordSearch(int moduleId, string keyword);
+		List<QuestionInfo> KeywordSearch(int moduleId, string keyword, int groupId);
 
 		PostInfo GetUsersLastPost(int userId, int portalId);
 
 		#endregion
 		
-		List<QuestionInfo> TermSearch(int moduleId, int pageSize, string term);
+		List<QuestionInfo> TermSearch(int moduleId, int pageSize, string term, int groupId);
 
 		List<QuestionServiceInfo> SearchQuestionTitles(int moduleId, string searchPhrase);
 
@@ -99,7 +99,7 @@ namespace DotNetNuke.DNNQA.Components.Controllers {
 
 		PostInfo GetPost(int postID, int portalId);
 
-		PostInfo AddPost(PostInfo objPost, int tabId);
+		PostInfo AddPost(PostInfo objPost, int tabId, int groupId);
 
 		void UpdatePost(PostInfo objPost, int tabId);
 
@@ -159,7 +159,7 @@ namespace DotNetNuke.DNNQA.Components.Controllers {
 
 		List<TermInfo> GetTermsByContentItem(int contentItemId, int vocabularyId);
 
-		List<TermInfo> GetTermsByContentType(int portalId, int moduleId, int vocabularyId);
+		List<TermInfo> GetTermsByContentType(int portalId, int moduleId, int vocabularyId, int groupId);
 
 		#region Term History
 

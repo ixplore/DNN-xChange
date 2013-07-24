@@ -66,7 +66,7 @@ namespace DotNetNuke.DNNQA.Providers.Data {
 		
 		#region Posts
 
-		IDataReader GetHomeQuestions(int moduleId, int excludeCount, int minScore);
+		IDataReader GetHomeQuestions(int moduleId, int excludeCount, int minScore, int groupId);
 
 		#region User
 
@@ -80,9 +80,9 @@ namespace DotNetNuke.DNNQA.Providers.Data {
 
 		#endregion
 
-		IDataReader KeywordSearch(int moduleId, string keyword);
+		IDataReader KeywordSearch(int moduleId, string keyword, int groupId);
 
-		IDataReader TermSearch(int moduleId, int pageSize, string term);
+		IDataReader TermSearch(int moduleId, int pageSize, string term, int groupId);
 
 		IDataReader SearchQuestionTitles(int moduleId, string searchPhrase);
 
@@ -98,7 +98,8 @@ namespace DotNetNuke.DNNQA.Providers.Data {
 
 		IDataReader GetSitemapQuestions(int portalId);
 
-		int AddPost(string title, string body, int bounty, int parentId, int portalId, int contentItemId, bool approved, DateTime approvedDate, int createdUserID, DateTime createdDate);
+		int AddPost(string title, string body, int bounty, int parentId, int portalId, int contentItemId, bool approved, DateTime approvedDate, int createdUserID, 
+			DateTime createdDate, int groupId);
 
 // ReSharper disable InconsistentNaming
 		void UpdatePost(int postId, string title, string body, int bounty, int parentID, int portalId, int contentItemId, bool approved, DateTime approvedDate, bool deleted, int answerId, DateTime answerDate, bool closed, DateTime closedDate, bool Protected, DateTime protectedDate, int lastModifiedUserID, DateTime lastModifiedDate);
@@ -162,7 +163,7 @@ namespace DotNetNuke.DNNQA.Providers.Data {
 
 		IDataReader GetTermsByContentItem(int contentItemId, int vocabularyId);
 
-		IDataReader GetTermsByContentType(int portalId, int contentTypeId, int moduleId, int vocabularyId);
+		IDataReader GetTermsByContentType(int portalId, int contentTypeId, int moduleId, int vocabularyId, int groupId);
 
 		#region Term History
 

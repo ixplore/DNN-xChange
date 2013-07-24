@@ -42,6 +42,14 @@ namespace DotNetNuke.DNNQA
 	[PresenterBinding(typeof(PrivilegeManagerPresenter))]
 	public partial class PrivilegeManager : ModuleView<PrivilegeManagerModel>, IPrivilegeManagerView
 	{
+		#region Private Members
+
+		private int GroupId
+		{
+			get { return (Request.QueryString["groupid"] == null) ? 0 : int.Parse(Request.QueryString["groupid"].ToString()); }
+		}
+
+		#endregion
 
 		#region Public Events
 
@@ -92,7 +100,7 @@ namespace DotNetNuke.DNNQA
 			dntbProtectQ.Text = colPrivileges.Single(s => s.Key == Constants.Privileges.ProtectQuestions.ToString()).Value.ToString();
 			dntbTrusted.Text = colPrivileges.Single(s => s.Key == Constants.Privileges.Trusted.ToString()).Value.ToString();
 
-			hlCancel.NavigateUrl = Links.Home(ModuleContext.TabId);
+			hlCancel.NavigateUrl = Links.Home(ModuleContext.TabId,GroupId);
 		}
 
 		#endregion

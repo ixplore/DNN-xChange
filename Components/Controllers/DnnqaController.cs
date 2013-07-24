@@ -35,6 +35,12 @@ namespace DotNetNuke.DNNQA.Components.Controllers {
 	public class DnnqaController : IDnnqaController {
 
 		private readonly IDataProvider _dataProvider;
+		
+		/// <summary>
+		/// GroupID if available
+		/// </summary>
+		public int QACacheTimout { get; set; }
+
 
 		#region Constructors
 
@@ -57,6 +63,7 @@ namespace DotNetNuke.DNNQA.Components.Controllers {
 			}
 
 			ComponentModel.ComponentFactory.RegisterComponentInstance<IDataProvider>(_dataProvider);
+			QACacheTimout = 1;
 		}
 
 		/// <summary>
@@ -173,27 +180,27 @@ namespace DotNetNuke.DNNQA.Components.Controllers {
 		/// <param name="minScore"></param>
 		/// <returns>A colleciton of the latest active questions. Activity, in this case, is based on the question or the last answer provided (and has nothing to do with voting).</returns>
 		/// <remarks>This method needs to cache at the module level and get updated every time a post occurs (question or reply). This is not user specific and we don't have to include pagesize/exclude count as part of cache key (as long as we resset this on settings update).</remarks>
-		public List<QuestionInfo> GetHomeQuestions(int moduleId, int pageSize, int excludeCount, int minScore) {
+		public List<QuestionInfo> GetHomeQuestions(int moduleId, int pageSize, int excludeCount, int minScore, int groupId) {
 			//DotNetNuke.Common.Requires.PropertyNotNegative("moduleId", "", moduleId);
 			//DotNetNuke.Common.Requires.PropertyNotNegative("pageSize", "", pageSize);
 			//DotNetNuke.Common.Requires.PropertyNotNegative("excludeCount", "", excludeCount);
 
-			var colHomeQuestions = (List<QuestionInfo>)DataCache.GetCache(Constants.ModuleCacheKey + Constants.HomeQuestionsCacheKey + moduleId);
+			var colHomeQuestions = (List<QuestionInfo>)DataCache.GetCache(Constants.ModuleCacheKey + Constants.HomeQuestionsCacheKey + moduleId + groupId);
 
 			if (colHomeQuestions == null)
 			{
-				var timeOut = 20 * Convert.ToInt32(Host.PerformanceSetting);
+				var timeOut = 1 * Convert.ToInt32(Host.PerformanceSetting);
 
-				colHomeQuestions = CBO.FillCollection<QuestionInfo>(_dataProvider.GetHomeQuestions(moduleId, excludeCount, minScore));
+				colHomeQuestions = CBO.FillCollection<QuestionInfo>(_dataProvider.GetHomeQuestions(moduleId, excludeCount, minScore,groupId));
 				// handle sorting before storing in cache.
 				var objSort = new SortInfo { Column = "active", Direction = Constants.SortDirection.Descending };
 				colHomeQuestions = Sorting.GetKeywordSearchCollection(pageSize, 0, objSort, colHomeQuestions).ToList();
 
-// ReSharper disable RedundantLogicalConditionalExpressionOperand
+				// ReSharper disable RedundantLogicalConditionalExpressionOperand
 				if ((timeOut > 0) && Constants.EnableCaching && (colHomeQuestions.Count > 0))
-// ReSharper restore RedundantLogicalConditionalExpressionOperand
+				// ReSharper restore RedundantLogicalConditionalExpressionOperand
 				{
-					DataCache.SetCache(Constants.ModuleCacheKey + Constants.HomeQuestionsCacheKey + moduleId, colHomeQuestions, TimeSpan.FromMinutes(timeOut));
+					DataCache.SetCache(Constants.ModuleCacheKey + Constants.HomeQuestionsCacheKey + moduleId + groupId, colHomeQuestions, TimeSpan.FromMinutes(timeOut));
 				}
 			}
 			return colHomeQuestions;
@@ -246,31 +253,31 @@ namespace DotNetNuke.DNNQA.Components.Controllers {
 		/// <param name="moduleId"></param>
 		/// <param name="keyword"></param>
 		/// <returns></returns>
-		public List<QuestionInfo> KeywordSearch(int moduleId, string keyword)
+		public List<QuestionInfo> KeywordSearch(int moduleId, string keyword, int groupId)
 		{
 			//DotNetNuke.Common.Requires.PropertyNotNegative("moduleId", "", moduleId);
 
-			var colModuleQuestions = (List<QuestionInfo>)DataCache.GetCache(Constants.ModuleCacheKey + Constants.ModuleQuestionsCacheKey + moduleId);
+			var colModuleQuestions = (List<QuestionInfo>)DataCache.GetCache(Constants.ModuleCacheKey + Constants.ModuleQuestionsCacheKey + moduleId + groupId);
 
 			if (keyword == string.Empty)
 			{
 				if (colModuleQuestions == null)
 				{
-					var timeOut = 20 * Convert.ToInt32(Host.PerformanceSetting);
+					var timeOut = 1 * Convert.ToInt32(Host.PerformanceSetting);
 
-					colModuleQuestions = CBO.FillCollection<QuestionInfo>(_dataProvider.KeywordSearch(moduleId, keyword));
+					colModuleQuestions = CBO.FillCollection<QuestionInfo>(_dataProvider.KeywordSearch(moduleId, keyword,groupId));
 
 					// ReSharper disable RedundantLogicalConditionalExpressionOperand
 					if ((timeOut > 0) && Constants.EnableCaching && (colModuleQuestions.Count > 0))
 					// ReSharper restore RedundantLogicalConditionalExpressionOperand
 					{
-						DataCache.SetCache(Constants.ModuleCacheKey + Constants.ModuleQuestionsCacheKey + moduleId, colModuleQuestions, TimeSpan.FromMinutes(timeOut));
+						DataCache.SetCache(Constants.ModuleCacheKey + Constants.ModuleQuestionsCacheKey + moduleId + groupId, colModuleQuestions, TimeSpan.FromMinutes(timeOut));
 					}
 				}
 			}
 			else
 			{
-				colModuleQuestions = CBO.FillCollection<QuestionInfo>(_dataProvider.KeywordSearch(moduleId, keyword));
+				colModuleQuestions = CBO.FillCollection<QuestionInfo>(_dataProvider.KeywordSearch(moduleId, keyword, groupId));
 			}
 		  
 			return colModuleQuestions;
@@ -283,13 +290,13 @@ namespace DotNetNuke.DNNQA.Components.Controllers {
 		/// <param name="pageSize"></param>
 		/// <param name="term"></param>
 		/// <returns></returns>
-		public List<QuestionInfo> TermSearch(int moduleId, int pageSize, string term) {
+		public List<QuestionInfo> TermSearch(int moduleId, int pageSize, string term, int groupId) {
 			//DotNetNuke.Common.Requires.PropertyNotNegative("moduleId", "", moduleId);
 			//DotNetNuke.Common.Requires.PropertyNotNegative("pageSize", "", pageSize);
 			//DotNetNuke.Common.Requires.PropertyNotNullOrEmpty("term", "", term);
 
 			// TODO: Implement caching here
-			return CBO.FillCollection<QuestionInfo>(_dataProvider.TermSearch(moduleId, pageSize, term));
+			return CBO.FillCollection<QuestionInfo>(_dataProvider.TermSearch(moduleId, pageSize, term, groupId));
 		}
 
 		/// <summary>
@@ -399,8 +406,9 @@ namespace DotNetNuke.DNNQA.Components.Controllers {
 		/// </summary>
 		/// <param name="objPost"></param>
 		/// <param name="tabId"></param>
+		/// <param name="groupId"></param>
 		/// <returns>The PostInfo object we added to the data store, along w/ it's newly created ContentItemId populated. Since update is called immediately after this (during question creation), no need to clear term cache here.</returns>
-		public PostInfo AddPost(PostInfo objPost, int tabId) {
+		public PostInfo AddPost(PostInfo objPost, int tabId, int groupId) {
 			//// title
 			//DotNetNuke.Common.Requires.PropertyNotNullOrEmpty("body", "", objPost.Body);
 			//DotNetNuke.Common.Requires.PropertyNotNegative("parentID", "", objPost.ParentID);
@@ -410,7 +418,8 @@ namespace DotNetNuke.DNNQA.Components.Controllers {
 			//DotNetNuke.Common.Requires.PropertyNotNullOrEmpty("createdByUserID", "", objPost.CreatedUserID.ToString());
 			//DotNetNuke.Common.Requires.PropertyNotNullOrEmpty("createdOnDate", "", objPost.CreatedDate.ToString());
 
-			objPost.PostId = _dataProvider.AddPost(objPost.Title, objPost.Body, objPost.Bounty, objPost.ParentId, objPost.PortalId, objPost.ContentItemId, objPost.Approved, objPost.ApprovedDate, objPost.CreatedUserId, objPost.CreatedDate);
+			objPost.PostId = _dataProvider.AddPost(objPost.Title, objPost.Body, objPost.Bounty, objPost.ParentId, objPost.PortalId, objPost.ContentItemId, objPost.Approved, 
+				objPost.ApprovedDate, objPost.CreatedUserId, objPost.CreatedDate,groupId);
 
 			if (objPost.ContentItemId < 1)
 			{
@@ -679,22 +688,23 @@ namespace DotNetNuke.DNNQA.Components.Controllers {
 		/// <param name="portalId"></param>
 		/// <param name="moduleId"></param>
 		/// <param name="vocabularyId"></param>
+		/// <param name="groupId"></param>
 		/// <returns></returns>
-		public List<TermInfo> GetTermsByContentType(int portalId, int moduleId, int vocabularyId)
+		public List<TermInfo> GetTermsByContentType(int portalId, int moduleId, int vocabularyId, int groupId)
 		{
 			//DotNetNuke.Common.Requires.PropertyNotNegative("portalId", "", portalId);
 			//DotNetNuke.Common.Requires.PropertyNotNegative("moduleId", "", moduleId);
-			var colTerms = (List<TermInfo>)DataCache.GetCache(Constants.ModuleCacheKey + Constants.ModuleTermsCacheKey + moduleId);
+			var colTerms = (List<TermInfo>)DataCache.GetCache(Constants.ModuleCacheKey + Constants.ModuleTermsCacheKey + moduleId + groupId);
 
 			if (colTerms == null)
 			{
-				var timeOut = 20 * Convert.ToInt32(Host.PerformanceSetting);
+				var timeOut = 1 * Convert.ToInt32(Host.PerformanceSetting);
 
-				colTerms = CBO.FillCollection<TermInfo>(_dataProvider.GetTermsByContentType(portalId, Content.GetContentTypeID(), moduleId, vocabularyId));
+				colTerms = CBO.FillCollection<TermInfo>(_dataProvider.GetTermsByContentType(portalId, Content.GetContentTypeID(), moduleId, vocabularyId, groupId));
 
 				if (timeOut > 0 & Constants.EnableCaching & colTerms != null)
 				{
-					DataCache.SetCache(Constants.ModuleCacheKey + Constants.ModuleTermsCacheKey + moduleId, colTerms, TimeSpan.FromMinutes(timeOut));
+					DataCache.SetCache(Constants.ModuleCacheKey + Constants.ModuleTermsCacheKey + moduleId + groupId, colTerms, TimeSpan.FromMinutes(timeOut));
 				}
 			}
 			return colTerms;

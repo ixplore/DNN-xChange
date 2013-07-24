@@ -47,12 +47,14 @@ namespace DotNetNuke.DNNQA.Components.Common {
 		internal const string SettingsEnablePlusOne = "DNNQA_EnablePlusOne";
 		internal const string SettingsEnableTwitter = "DNNQA_EnableTwitter";
 		internal const string SettingsEnableLinkedIn = "DNNQA_EnableLinkedIn";
+		internal const string SettingsCacheTimeout = "DNNQA_CacheTimeout";
 
 		internal const string DefaultNameFormat = "DisplayName";
 		internal const bool DefaultEnableRss = false;
 		internal const bool DefaultAutoApprove = true;
 
 		// UI
+		internal const int DefaultCacheTimeout = 20;
 		internal const int DefaultPageSize = 20;
 		internal const int DefaultHomeMaxTags = 20;
 		internal const string DefaultHomeTagTimeFrame = "DailyUsage";

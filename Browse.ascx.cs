@@ -39,6 +39,14 @@ namespace DotNetNuke.DNNQA
 	[PresenterBinding(typeof(BrowsePresenter))]
 	public partial class Browse : ModuleView<BrowseModel>, IBrowseView
 	{
+		#region Private Members
+
+		private int GroupId
+		{
+			get { return (Request.QueryString["groupid"] == null) ? 0 : int.Parse(Request.QueryString["groupid"].ToString()); }
+		}
+
+		#endregion
 
 		#region Public Events
 
@@ -136,7 +144,7 @@ namespace DotNetNuke.DNNQA
 			if (Model.SelectedTerm != null)
 			{
 				hlDetail.NavigateUrl = Model.TagDetailUrl;
-				hlEdit.NavigateUrl = Links.EditTag(ModuleContext, ModuleContext.TabId, Model.SelectedTerm.Name);
+				hlEdit.NavigateUrl = Links.EditTag(ModuleContext, ModuleContext.TabId, Model.SelectedTerm.Name, GroupId);
 				pnlTag.Visible = true;
 			}
 
@@ -162,15 +170,16 @@ namespace DotNetNuke.DNNQA
 			{
 				if (Model.AppliedKeyword != null)
 				{
-					hlNewest.NavigateUrl = Links.KeywordSearchSorted(ModuleContext, Model.AppliedKeyword, "newest");
-					hlVotes.NavigateUrl = Links.KeywordSearchSorted(ModuleContext, Model.AppliedKeyword, "votes");
-					hlActive.NavigateUrl = Links.KeywordSearch(ModuleContext, Model.AppliedKeyword);
+					//Changes for v01.02.00
+					hlNewest.NavigateUrl = Links.KeywordSearchSorted(ModuleContext, Model.AppliedKeyword, "newest",GroupId);
+					hlVotes.NavigateUrl = Links.KeywordSearchSorted(ModuleContext, Model.AppliedKeyword, "votes", GroupId);
+					hlActive.NavigateUrl = Links.KeywordSearch(ModuleContext, Model.AppliedKeyword,GroupId);
 				}
 				else if (Model.SelectedTerm != null)
 				{
-					hlNewest.NavigateUrl = Links.ViewTaggedQuestionsSorted(ModuleContext, Model.SelectedTerm.Name, "newest");
-					hlVotes.NavigateUrl = Links.ViewTaggedQuestionsSorted(ModuleContext, Model.SelectedTerm.Name, "votes");
-					hlActive.NavigateUrl = Links.ViewTaggedQuestions(Model.SelectedTerm.Name, ModuleContext.PortalSettings.ActiveTab, ModuleContext.PortalSettings);
+					hlNewest.NavigateUrl = Links.ViewTaggedQuestionsSorted(ModuleContext, Model.SelectedTerm.Name, "newest", GroupId);
+					hlVotes.NavigateUrl = Links.ViewTaggedQuestionsSorted(ModuleContext, Model.SelectedTerm.Name, "votes", GroupId);
+					hlActive.NavigateUrl = Links.ViewTaggedQuestions(Model.SelectedTerm.Name, ModuleContext.PortalSettings.ActiveTab, ModuleContext.PortalSettings, GroupId);
 				}
 				else if (Model.AppliedUser > 0)
 				{
@@ -191,9 +200,11 @@ namespace DotNetNuke.DNNQA
 				else
 				{
 					// no special filters
-					hlNewest.NavigateUrl = Links.ViewQuestionsSorted(ModuleContext, "newest", Model.ApplyUnanswered, Model.CurrentPage);
-					hlVotes.NavigateUrl = Links.ViewQuestionsSorted(ModuleContext, "votes", Model.ApplyUnanswered, Model.CurrentPage);
-					hlActive.NavigateUrl = Model.ApplyUnanswered ? Links.ViewUnansweredQuestions(ModuleContext, Model.CurrentPage, "") : Links.ViewQuestions(ModuleContext);
+					hlNewest.NavigateUrl = Links.ViewQuestionsSorted(ModuleContext, "newest", Model.ApplyUnanswered, Model.CurrentPage,GroupId);
+					hlVotes.NavigateUrl = Links.ViewQuestionsSorted(ModuleContext, "votes", Model.ApplyUnanswered, Model.CurrentPage,GroupId);
+					hlActive.NavigateUrl = Model.ApplyUnanswered 
+						? Links.ViewUnansweredQuestions(ModuleContext, Model.CurrentPage, "",GroupId) 
+						: Links.ViewQuestions(ModuleContext, GroupId);
 				}
 			}
 

@@ -436,6 +436,24 @@ namespace DotNetNuke.DNNQA {
         protected global::System.Web.UI.WebControls.CheckBox chkEnableRSS;
         
         /// <summary>
+        /// dnnlblCacheTimeout control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::DotNetNuke.UI.UserControls.LabelControl dnnlblCacheTimeout;
+        
+        /// <summary>
+        /// dntxtbxCacheTimeout control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::DotNetNuke.Web.UI.WebControls.DnnNumericTextBox dntxtbxCacheTimeout;
+        
+        /// <summary>
         /// dnnlblQCCVC control.
         /// </summary>
         /// <remarks>

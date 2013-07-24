@@ -40,6 +40,14 @@ namespace DotNetNuke.DNNQA
 	[PresenterBinding(typeof(TagListPresenter))]
 	public partial class TagList : ModuleView<TagListModel>, ITagListView
 	{
+		#region Private Members
+
+		private int GroupId
+		{
+			get { return (Request.QueryString["groupid"] == null) ? 0 : int.Parse(Request.QueryString["groupid"].ToString()); }
+		}
+
+		#endregion
 
 		#region Public Events
 
@@ -110,9 +118,9 @@ namespace DotNetNuke.DNNQA
 
 			if (filter.Trim() != "")
 			{
-				hlTagPopular.NavigateUrl = Links.ViewTagsSortedAndFiltered(ModuleContext, filter, "popular", Model.CurrentPage);
-				hlTagName.NavigateUrl = Links.ViewTagsSortedAndFiltered(ModuleContext, filter, "name", Model.CurrentPage);
-				hlTagLatest.NavigateUrl = Links.ViewTagsSortedAndFiltered(ModuleContext, filter, "newest", Model.CurrentPage);
+				hlTagPopular.NavigateUrl = Links.ViewTagsSortedAndFiltered(ModuleContext, filter, "popular", Model.CurrentPage, GroupId);
+				hlTagName.NavigateUrl = Links.ViewTagsSortedAndFiltered(ModuleContext, filter, "name", Model.CurrentPage, GroupId);
+				hlTagLatest.NavigateUrl = Links.ViewTagsSortedAndFiltered(ModuleContext, filter, "newest", Model.CurrentPage, GroupId);
 			}
 		}
 
@@ -129,9 +137,9 @@ namespace DotNetNuke.DNNQA
 			rptTags.DataSource = Model.TopTags;
 			rptTags.DataBind();
 
-			hlTagPopular.NavigateUrl = Links.ViewTagsSortedAndFiltered(ModuleContext, filter, "popular", Model.CurrentPage);
-			hlTagName.NavigateUrl = Links.ViewTagsSortedAndFiltered(ModuleContext, filter, "name", Model.CurrentPage);
-			hlTagLatest.NavigateUrl = Links.ViewTagsSortedAndFiltered(ModuleContext, filter, "newest", Model.CurrentPage);
+			hlTagPopular.NavigateUrl = Links.ViewTagsSortedAndFiltered(ModuleContext, filter, "popular", Model.CurrentPage, GroupId);
+			hlTagName.NavigateUrl = Links.ViewTagsSortedAndFiltered(ModuleContext, filter, "name", Model.CurrentPage, GroupId);
+			hlTagLatest.NavigateUrl = Links.ViewTagsSortedAndFiltered(ModuleContext, filter, "newest", Model.CurrentPage, GroupId);
 		}
 
 		#endregion
@@ -164,15 +172,15 @@ namespace DotNetNuke.DNNQA
 
 			if (Model.Filter != Null.NullString)
 			{
-				hlTagPopular.NavigateUrl = Links.ViewTagsSortedAndFiltered(ModuleContext, Model.Filter, "popular", Model.CurrentPage);
-				hlTagName.NavigateUrl = Links.ViewTagsSortedAndFiltered(ModuleContext, Model.Filter, "name", Model.CurrentPage);
-				hlTagLatest.NavigateUrl = Links.ViewTagsSortedAndFiltered(ModuleContext, Model.Filter, "newest", Model.CurrentPage);
+				hlTagPopular.NavigateUrl = Links.ViewTagsSortedAndFiltered(ModuleContext, Model.Filter, "popular", Model.CurrentPage, GroupId);
+				hlTagName.NavigateUrl = Links.ViewTagsSortedAndFiltered(ModuleContext, Model.Filter, "name", Model.CurrentPage, GroupId);
+				hlTagLatest.NavigateUrl = Links.ViewTagsSortedAndFiltered(ModuleContext, Model.Filter, "newest", Model.CurrentPage, GroupId);
 			}
 			else
 			{
-				hlTagPopular.NavigateUrl = Links.ViewTagsSorted(ModuleContext, "popular", Model.CurrentPage);
-				hlTagName.NavigateUrl = Links.ViewTagsSorted(ModuleContext, "name", Model.CurrentPage);
-				hlTagLatest.NavigateUrl = Links.ViewTagsSorted(ModuleContext, "newest", Model.CurrentPage);
+				hlTagPopular.NavigateUrl = Links.ViewTagsSorted(ModuleContext, "popular", Model.CurrentPage, GroupId);
+				hlTagName.NavigateUrl = Links.ViewTagsSorted(ModuleContext, "name", Model.CurrentPage, GroupId);
+				hlTagLatest.NavigateUrl = Links.ViewTagsSorted(ModuleContext, "newest", Model.CurrentPage, GroupId);
 			}
 
 			if (Page.IsPostBack) return;

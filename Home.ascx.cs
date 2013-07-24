@@ -40,6 +40,14 @@ namespace DotNetNuke.DNNQA
 	[PresenterBinding(typeof(HomePresenter))]
 	public partial class Home : ModuleView<HomeModel>, IHomeView
 	{
+		#region Private Members
+
+		private int GroupId
+		{
+			get { return (Request.QueryString["groupid"] == null) ? 0 : int.Parse(Request.QueryString["groupid"].ToString()); }
+		}
+
+		#endregion
 
 		#region Public Events
 
@@ -67,7 +75,7 @@ namespace DotNetNuke.DNNQA
 		protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
-			Utils.SetHomePageMeta((CDefault)Page, ModuleContext);
+			Utils.SetHomePageMeta((CDefault)Page, ModuleContext, GroupId);
 		}
 
 		/// <summary>
@@ -114,7 +122,7 @@ namespace DotNetNuke.DNNQA
 		public void Refresh()
 		{
 			dgqHeaderNav.ModContext = ModuleContext;
-			hlAllTags.NavigateUrl = Links.ViewTags(ModuleContext);
+			hlAllTags.NavigateUrl = Links.ViewTags(ModuleContext, GroupId);
 			rptQuestions.DataSource = Model.LatestQuestions;
 			rptQuestions.DataBind();
 			rptTags.DataSource = Model.LatestTerms;

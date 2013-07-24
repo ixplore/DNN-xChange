@@ -157,6 +157,15 @@ namespace DotNetNuke.DNNQA.Controls
 			}
 		}
 
+
+		private int GroupId
+		{
+			get
+			{
+				return (Request.QueryString["groupid"] == null) ? 0 : int.Parse(Request.QueryString["groupid"].ToString());
+			}
+		}
+
 		#endregion
 
 		#region Public Properties
@@ -232,7 +241,8 @@ namespace DotNetNuke.DNNQA.Controls
 
 			if (search.Length > 1)
 			{
-				Response.Redirect(Links.KeywordSearch(ModContext, search));
+				//Changes for v01.02.00
+				Response.Redirect(Links.KeywordSearch(ModContext, search,GroupId));
 			}
 		}
 
@@ -246,22 +256,22 @@ namespace DotNetNuke.DNNQA.Controls
 		private void BindNavigation()
 		{
 			hlHome.Text = Localization.GetString("hlHome", MyResourceFile);
-			hlHome.NavigateUrl = Links.Home(ModContext.TabId);
+			hlHome.NavigateUrl = Links.Home(ModContext.TabId,GroupId);
 
 			hlQuestions.Text = Localization.GetString("hlQuestions", MyResourceFile);
-			hlQuestions.NavigateUrl = Links.ViewQuestions(ModContext);
+			hlQuestions.NavigateUrl = Links.ViewQuestions(ModContext, GroupId);
 
 			hlTags.Text = Localization.GetString("hlTags", MyResourceFile);
-			hlTags.NavigateUrl = Links.ViewTags(ModContext);
+			hlTags.NavigateUrl = Links.ViewTags(ModContext, GroupId);
 
 			hlBadges.Text = Localization.GetString("hlBadges", MyResourceFile);
-			hlBadges.NavigateUrl = Links.ViewBadges(ModContext);
+			hlBadges.NavigateUrl = Links.ViewBadges(ModContext,GroupId);
 
 			hlUnanswered.Text = Localization.GetString("hlUnanswered", MyResourceFile);
-			hlUnanswered.NavigateUrl = Links.ViewUnansweredQuestions(ModContext, 1, "");
+			hlUnanswered.NavigateUrl = Links.ViewUnansweredQuestions(ModContext, 1, "",GroupId);
 
 			hlAskQuestion.Text = Localization.GetString("hlAskQuestion", MyResourceFile);
-			hlAskQuestion.NavigateUrl = Links.AskQuestion(ModContext);
+			hlAskQuestion.NavigateUrl = Links.AskQuestion(ModContext, GroupId);
 
 			imgSearch.ImageUrl = ResolveUrl("~/DesktopModules/DNNQA/images/searchButton_bg.png");
 			imgSearch.AlternateText = Localization.GetString("overlaySearch", MyResourceFile);

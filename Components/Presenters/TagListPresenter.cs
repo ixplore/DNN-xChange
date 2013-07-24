@@ -122,6 +122,11 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 			get { return 1; }
 		}
 
+		private int GroupId
+		{
+			get { return (Request.QueryString["groupid"] == null) ? 0 : int.Parse(Request.QueryString["groupid"]); }
+		}
+
 		#endregion
 
 		#region Constructors
@@ -175,7 +180,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 				View.Model.TopTags = BindTags(View.Model.CurrentPage, View.Model.Filter);
 				View.Model.PageTitle = Localization.GetString("TagListMetaTitle", LocalResourceFile);
 				View.Model.PageDescription = Localization.GetString("TagListMetaDescription", LocalResourceFile);
-				View.Model.PageLink = Links.ViewTags(ModuleContext);
+				View.Model.PageLink = Links.ViewTags(ModuleContext,GroupId);
 				View.ItemDataBound += ItemDataBound;
 				View.PagerChanged += PagerChanged;
 				View.TagFiltered += TagFiltered;
@@ -198,7 +203,8 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 			var colTerms = new List<TermInfo> {e.Term};
 
 			e.Tags.ModContext = ModuleContext;
-            e.Tags.ModuleTab = ModuleContext.PortalSettings.ActiveTab;
+			e.Tags.ModuleTab = ModuleContext.PortalSettings.ActiveTab;
+			e.Tags.GroupId = GroupId;
 			e.Tags.DataSource = colTerms;
 			e.Tags.DataBind();
 
@@ -246,7 +252,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 		/// <returns></returns>
 		public List<TermInfo> BindTags(int currentPage, string filter)
 		{
-			var topTags = Controller.GetTermsByContentType(ModuleContext.PortalId, ModuleContext.ModuleId, VocabularyId);
+			var topTags = Controller.GetTermsByContentType(ModuleContext.PortalId, ModuleContext.ModuleId, VocabularyId, GroupId);
 
 			// apply filter
 			if (filter != Null.NullString)
@@ -282,7 +288,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 			if ((totalPages > 1) && (totalPages > currentPage + 1))
 			{
 				View.ShowNextButton(true);
-				View.Model.NextPageLink = Links.ViewTagsPaged(ModuleContext, View.Model.CurrentPage + 1);
+				View.Model.NextPageLink = Links.ViewTagsPaged(ModuleContext, View.Model.CurrentPage + 1,GroupId);
 			}
 			else
 			{
@@ -292,7 +298,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 			if ((totalPages > 1) && (currentPage > 0))
 			{
 				View.ShowBackButton(true);
-				View.Model.PrevPageLink = Links.ViewTagsPaged(ModuleContext, View.Model.CurrentPage - 1);
+				View.Model.PrevPageLink = Links.ViewTagsPaged(ModuleContext, View.Model.CurrentPage - 1, GroupId);
 			}
 			else
 			{

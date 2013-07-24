@@ -824,7 +824,10 @@ namespace DotNetNuke.DNNQA.Controls
 				var cntJournal = new Journal();
 				string summary;
 				var title = Question.Title;
-				var questionUrl = Links.ViewQuestion(Question.PostId, Question.Title, ModContext.PortalSettings.ActiveTab, ModContext.PortalSettings);
+
+				var _groupLink = Context.Request.QueryString["groupid"] ?? "0";
+				var questionUrl = Links.ViewQuestion(Question.PostId, Question.Title, ModContext.PortalSettings.ActiveTab, ModContext.PortalSettings,
+					_groupLink == "0" ? 0 : int.Parse(_groupLink));
 
 				switch (objVote.VoteTypeId)
 				{

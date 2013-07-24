@@ -47,7 +47,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 		#region Members
 
 		protected IDnnqaController Controller { get; private set; }
-
+		
 		/// <summary>
 		/// 
 		/// </summary>
@@ -263,6 +263,14 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 			get { return 1; }
 		}
 
+		/// <summary>
+		/// GroupID if available
+		/// </summary>
+		private int GroupId
+		{
+			get { return (Request.QueryString["groupid"] == null) ? 0 : int.Parse(Request.QueryString["groupid"].ToString()); }
+		}
+
 		#endregion
 
 		#region Constructors
@@ -295,6 +303,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 			}
 
 			Controller = controller;
+			Controller.QACacheTimout = Convert.ToInt32(ModuleContext.Settings[Constants.SettingsCacheTimeout]);
 			View.Load += ViewLoad;
 		}
 
@@ -333,7 +342,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 				View.Model.ApplyUnanswered = Unanswered;				
 				View.Model.PageTitle = Localization.GetString("BrowseMetaTitle", LocalResourceFile);
 				View.Model.PageDescription = Localization.GetString("BrowseMetaDescription", LocalResourceFile);
-				View.Model.PageLink = Links.ViewQuestions(ModuleContext);
+				View.Model.PageLink = Links.ViewQuestions(ModuleContext,GroupId);
 				View.Model.ColQuestions = SearchResults(Page);
 
 				View.PagerChanged += PagerChanged;
@@ -361,7 +370,9 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 			e.TitleLink.Text = e.ObjQuestion.Title;
 			// because this view can show both questions and answers (all posts), we need to make sure we are generating a proper link to the question itself.
 			var questionId = e.ObjQuestion.ParentId != 0 ? e.ObjQuestion.ParentId : e.ObjQuestion.PostId;
-			e.TitleLink.NavigateUrl = Links.ViewQuestion(questionId, e.ObjQuestion.Title, ModuleContext.PortalSettings.ActiveTab, ModuleContext.PortalSettings);
+			var _groupLink = Request.QueryString["groupid"] ?? "0";
+			e.TitleLink.NavigateUrl = Links.ViewQuestion(questionId, e.ObjQuestion.Title, ModuleContext.PortalSettings.ActiveTab,
+				ModuleContext.PortalSettings, _groupLink == "0" ? 0 : int.Parse(_groupLink));
 
 			if (e.ObjQuestion.TotalAnswers > 0)
 			{
@@ -383,17 +394,18 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 			e.VotesLiteral.Text = e.ObjQuestion.QuestionVotes.ToString();
 
 			e.Tags.ModContext = ModuleContext;
-			e.Tags.ModuleTab = ModuleContext.PortalSettings.ActiveTab;
+			e.Tags.ModuleTab  = ModuleContext.PortalSettings.ActiveTab;
+			e.Tags.GroupId = GroupId;
 			e.Tags.DataSource = e.ObjQuestion.QaTerms(VocabularyId);
 			e.Tags.DataBind();
 
 			var objUser = DotNetNuke.Entities.Users.UserController.GetUserById(ModuleContext.PortalId, e.ObjQuestion.LastApprovedUserId);
 			e.DateLiteral.Text = Utils.CalculateDateForDisplay(e.ObjQuestion.LastApprovedDate) + @" <a href=" + DotNetNuke.Common.Globals.UserProfileURL(e.ObjQuestion.LastApprovedUserId) + @">" + objUser.DisplayName + @"</a>";
 
-			e.AcceptedImage.Visible = e.ObjQuestion.AnswerId > 0;
-			e.AcceptedImage.ImageUrl = control.ResolveUrl("~/DesktopModules/DNNQA/images/accepted.png");
+			e.AcceptedImage.Visible       = e.ObjQuestion.AnswerId > 0;
+			e.AcceptedImage.ImageUrl      = control.ResolveUrl("~/DesktopModules/DNNQA/images/accepted.png");
 			e.AcceptedImage.AlternateText = Localization.GetString("imgAccepted", Constants.SharedResourceFileName);
-			e.AcceptedImage.ToolTip = Localization.GetString("AcceptedAnswer", Constants.SharedResourceFileName);
+			e.AcceptedImage.ToolTip       = Localization.GetString("AcceptedAnswer", Constants.SharedResourceFileName);
 		}
 
 		/// <summary>
@@ -418,6 +430,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 
 			e.TagControl.ModContext = ModuleContext;
 			e.TagControl.ModuleTab = ModuleContext.PortalSettings.ActiveTab;
+			e.TagControl.GroupId = GroupId;
 			e.TagControl.DataSource = colTerms;
 			e.TagControl.ModuleTab = ModuleContext.PortalSettings.ActiveTab;
 			e.TagControl.CountMode = TagTimeFrame;
@@ -470,13 +483,13 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 			if (applyTag)
 			{
 				var urlTerm =
-					(from t in Controller.GetTermsByContentType(ModuleContext.PortalId, ModuleContext.ModuleId, VocabularyId)
+					(from t in Controller.GetTermsByContentType(ModuleContext.PortalId, ModuleContext.ModuleId, VocabularyId, GroupId)
 					 where t.Name.ToLower() == Tag.ToLower()
 					 select t).SingleOrDefault();
 
 				if (urlTerm != null)
 				{
-					View.Model.TagDetailUrl = Links.ViewTagDetail(ModuleContext, ModuleContext.TabId, urlTerm.Name);
+					View.Model.TagDetailUrl = Links.ViewTagDetail(ModuleContext, ModuleContext.TabId, urlTerm.Name, GroupId);
 					View.Model.SelectedTerm = urlTerm;
 
 					var objTagFilter = new FilterInfo
@@ -558,7 +571,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 
 			var objSort = new SortInfo { Column = "active", Direction = Constants.SortDirection.Descending };
 
-			var colModuleTags = Controller.GetTermsByContentType(ModuleContext.PortalId, ModuleContext.ModuleId, VocabularyId);
+			var colModuleTags = Controller.GetTermsByContentType(ModuleContext.PortalId, ModuleContext.ModuleId, VocabularyId, GroupId);
 
 			IEnumerable<TermInfo> colTags;
 			switch (TagTimeFrame)
@@ -596,7 +609,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 
 			if (applyTag)
 			{
-				results = Controller.TermSearch(ModuleContext.ModuleId, 1000, Tag);
+				results = Controller.TermSearch(ModuleContext.ModuleId, 1000, Tag, GroupId);
 				tagResults.Add(View.Model.SelectedTerm);
 
 				TotalRecords = results.Count() > 0 ? results[0].TotalRecords : 0;
@@ -667,7 +680,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 			{
 				if (applyKeyword)
 				{
-					results = Controller.KeywordSearch(ModuleContext.ModuleId, Keyword);
+					results = Controller.KeywordSearch(ModuleContext.ModuleId, Keyword, GroupId);
 					TotalRecords = results.Count() > 0 ? results[0].TotalRecords : 0;
 					View.Model.HeaderTitle = Localization.GetString("Keyword", LocalResourceFile);
 
@@ -681,7 +694,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 				}
 				else
 				{
-					results = Controller.KeywordSearch(ModuleContext.ModuleId, Null.NullString);
+					results = Controller.KeywordSearch(ModuleContext.ModuleId, Null.NullString, GroupId);
 					TotalRecords = results.Count() > 0 ? results[0].TotalRecords : 0;
 					View.Model.HeaderTitle = Localization.GetString("LatestQuestions", LocalResourceFile);
 
@@ -704,7 +717,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 			if ((totalPages > 1) && (totalPages > currentPage + 1))
 			{
 				View.ShowNextButton(true);
-				View.Model.NextPageLink = Links.ViewQuestionsPaged(ModuleContext, View.Model.CurrentPage + 1);
+				View.Model.NextPageLink = Links.ViewQuestionsPaged(ModuleContext, View.Model.CurrentPage + 1, GroupId);
 			}
 			else
 			{
@@ -714,7 +727,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 			if ((totalPages > 1) && (currentPage > 0))
 			{
 				View.ShowBackButton(true);
-				View.Model.PrevPageLink = Links.ViewQuestionsPaged(ModuleContext, View.Model.CurrentPage - 1);
+				View.Model.PrevPageLink = Links.ViewQuestionsPaged(ModuleContext, View.Model.CurrentPage - 1, GroupId);
 			}
 			else
 			{

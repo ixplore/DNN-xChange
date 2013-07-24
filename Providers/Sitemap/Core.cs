@@ -67,12 +67,12 @@ namespace DotNetNuke.DNNQA.Providers.Sitemap
 		{
 			var pageUrl = new SitemapUrl
 							{
-								Url = Links.ViewQuestion(objQuestion.PostId, objQuestion.TabID, ps),
+								Url = Links.ViewQuestion(objQuestion.PostId, objQuestion.TabID, ps,0),
 								Priority = (float) 0.5,
 								LastModified = objQuestion.LastModifiedOnDate,
 								ChangeFrequency = SitemapChangeFrequency.Daily
 							};
-
+			//TODO: The above function call has a hardcoded parameter 0 for groupId. Pending.
 			return pageUrl;
 		}
 

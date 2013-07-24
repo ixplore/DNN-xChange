@@ -64,6 +64,7 @@ namespace DotNetNuke.DNNQA.Controls
 
 		#endregion
 
+
 		#region Constructors
 
 		/// <summary>
@@ -107,6 +108,8 @@ namespace DotNetNuke.DNNQA.Controls
 		public Constants.TagMode CountMode { get; set; }
 
 		public TabInfo ModuleTab { get; set; }
+
+		public int GroupId { get; set; }
 
 		#endregion
 
@@ -225,10 +228,10 @@ namespace DotNetNuke.DNNQA.Controls
 			{
 				foreach (var term in Terms)
 				{
-					var link = Links.ViewTaggedQuestions(term.Name, ModuleTab, ModContext.PortalSettings);
-					var detaillink = Links.ViewTagDetail(ModContext, ModuleTab.TabID, term.Name);
+					var link = Links.ViewTaggedQuestions(term.Name, ModuleTab, ModContext.PortalSettings,GroupId);
+					var detaillink = Links.ViewTagDetail(ModContext, ModuleTab.TabID, term.Name, GroupId);
 					//var historylink = Links.ViewTagHistory(ModContext, term.Name);
-					var improvelink = Links.EditTag(ModContext, ModuleTab.TabID, term.Name);
+					var improvelink = Links.EditTag(ModContext, ModuleTab.TabID, term.Name, GroupId);
 
 					// <div>
 					writer.AddAttribute(HtmlTextWriterAttribute.Class, "qaTooltip");

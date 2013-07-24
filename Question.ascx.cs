@@ -101,7 +101,8 @@ namespace DotNetNuke.DNNQA
 		/// <param name="e"></param>
 		protected override void OnLoad(EventArgs e) {
 			base.OnLoad(e);
-			Utils.SetQuestionPageMeta((CDefault)Page, Model.Question, ModuleContext);
+			var _groupLink = Request.QueryString["groupid"] ?? "0";
+			Utils.SetQuestionPageMeta((CDefault)Page, Model.Question, ModuleContext, _groupLink == "0" ? 0 : int.Parse(_groupLink));
 
 			//ClientResourceManager.RegisterScript(Page, "http://s7.addthis.com/js/250/addthis_widget.js#domready"); //pubid=
 
@@ -181,8 +182,9 @@ namespace DotNetNuke.DNNQA
 			}
 
 			FlagPost(this, new FlagPostEventArgs<ModerationLogInfo>(objModeration));
-
-			Response.Redirect(Links.ViewQuestion(Model.Question.PostId, Model.Question.Title, ModuleContext.PortalSettings.ActiveTab, ModuleContext.PortalSettings), true);
+			var _groupLink = Request.QueryString["groupid"] ?? "0";
+			Response.Redirect(Links.ViewQuestion(Model.Question.PostId, Model.Question.Title, ModuleContext.PortalSettings.ActiveTab, 
+				ModuleContext.PortalSettings, _groupLink == "0" ? 0 : int.Parse(_groupLink)), true);
 		}
 
 		/// <summary>
@@ -251,11 +253,12 @@ namespace DotNetNuke.DNNQA
 										};
 
 				FlagPost(this, new FlagPostEventArgs<ModerationLogInfo>(objModeration));
-
+				var _groupLink = Request.QueryString["groupid"] ?? "0";
 				if (Model.Question.PostId == objModeration.PostId)
 				{
 					// undoing a flagged question
-					Response.Redirect(Links.ViewQuestion(Model.Question.PostId, Model.Question.Title, ModuleContext.PortalSettings.ActiveTab, ModuleContext.PortalSettings), true);
+					Response.Redirect(Links.ViewQuestion(Model.Question.PostId, Model.Question.Title, ModuleContext.PortalSettings.ActiveTab,
+						ModuleContext.PortalSettings, _groupLink == "0" ? 0 : int.Parse(_groupLink)), true);
 				}
 				else
 				{
@@ -380,7 +383,10 @@ namespace DotNetNuke.DNNQA
 
 			hlOldest.NavigateUrl = Links.ViewQuestionSorted(ModuleContext, Model.Question.PostId, "oldest");
 			hlActive.NavigateUrl = Links.ViewQuestionSorted(ModuleContext, Model.Question.PostId, "active");
-			hlVotes.NavigateUrl = Links.ViewQuestion(Model.Question.PostId, Model.Question.Title, ModuleContext.PortalSettings.ActiveTab, ModuleContext.PortalSettings);
+			
+			var _groupLink = Request.QueryString["groupid"] ?? "0";
+			hlVotes.NavigateUrl = Links.ViewQuestion(Model.Question.PostId, Model.Question.Title, ModuleContext.PortalSettings.ActiveTab,
+				ModuleContext.PortalSettings, _groupLink == "0" ? 0 : int.Parse(_groupLink));
 
 			if (Page.IsPostBack) return;
 			cmdMore.CommandArgument = "1";

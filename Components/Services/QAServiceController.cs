@@ -20,12 +20,16 @@
 
 using System;
 using System.Linq;
-using System.Web.Mvc;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.Security;
 using DotNetNuke.Services.Exceptions;
 using DotNetNuke.Services.Social.Notifications;
-using DotNetNuke.Web.Services;
+using DotNetNuke.Web.Api;
+using System.Runtime.Serialization.Json;
+using Newtonsoft.Json;
 
 namespace DotNetNuke.DNNQA.Components.Services
 {
@@ -34,7 +38,7 @@ namespace DotNetNuke.DNNQA.Components.Services
     //[SupportedModules("Social Events")]
     [DnnAuthorize]
     [ValidateAntiForgeryToken]
-    public class SocialEventServiceController : DnnController, IServiceRouteMapper
+    public class SocialEventServiceController : DnnApiController, IServiceRouteMapper
     {
 
         #region Explicit Interface Methods
@@ -42,7 +46,7 @@ namespace DotNetNuke.DNNQA.Components.Services
         public void RegisterRoutes(IMapRoute mapRouteManager)
         {
 
-            mapRouteManager.MapRoute("DNNQA", "{controller}.ashx/{action}", new[] { "DotNetNuke.DNNQA.Components.Services" });
+            mapRouteManager.MapHttpRoute("DNNQA", "default","{controller}.ashx/{action}", new[] { "DotNetNuke.DNNQA.Components.Services" });
         }
 
         #endregion
@@ -70,8 +74,8 @@ namespace DotNetNuke.DNNQA.Components.Services
 
         #region Public Methods
 
-        [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult UpdateAttendStatus(int portalId, int tabId, int groupId, int eventId, int status)
+        [HttpPost]
+        public HttpResponseMessage UpdateAttendStatus(int portalId, int tabId, int groupId, int eventId, int status)
         {
             //var controller = new SocialEventsController();
             //var @event = controller.GetEvent(
@@ -107,7 +111,8 @@ namespace DotNetNuke.DNNQA.Components.Services
 
             var response = new { Value = eventId, Result = "success" };
 
-            return Json(response);
+            return Request.CreateResponse(HttpStatusCode.OK);
+            //Json(response);
         }
 
         #endregion

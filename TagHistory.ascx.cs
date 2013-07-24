@@ -43,6 +43,14 @@ namespace DotNetNuke.DNNQA
 	[PresenterBinding(typeof(TagHistoryPresenter))]
 	public partial class TagHistory : ModuleView<TagHistoryModel>, ITagHistoryView
 	{
+		#region Private Members
+
+		private int GroupId
+		{
+			get { return (Request.QueryString["groupid"] == null) ? 0 : int.Parse(Request.QueryString["groupid"]); }
+		}
+
+		#endregion
 
 		#region Public Events
 
@@ -69,7 +77,7 @@ namespace DotNetNuke.DNNQA
 		{
 			base.OnLoad(e);
 
-			Utils.SetTermHistoryPageMeta((CDefault)Page, Model.SelectedTerm, ModuleContext, Model.PageTitle, Model.PageDescription);
+			Utils.SetTermHistoryPageMeta((CDefault)Page, Model.SelectedTerm, ModuleContext, Model.PageTitle, Model.PageDescription, GroupId);
 		}
 
 		/// <summary>
@@ -100,7 +108,7 @@ namespace DotNetNuke.DNNQA
 			dgqHeaderNav.ModContext = ModuleContext;
 
 			hlTitle.Text = Model.SelectedCoreTerm.Name;
-			hlTitle.NavigateUrl = Links.ViewTagDetail(ModuleContext, ModuleContext.TabId, Model.SelectedCoreTerm.Name);
+			hlTitle.NavigateUrl = Links.ViewTagDetail(ModuleContext, ModuleContext.TabId, Model.SelectedCoreTerm.Name, GroupId);
 
 			UserInfo objUser;
 			if (Model.SelectedCoreTerm.Description.Trim().Length < 1)
@@ -111,7 +119,9 @@ namespace DotNetNuke.DNNQA
 				if (ModuleContext.PortalSettings.UserId > 0)
 				{
 					strMessage = @"<div class='dnnFormMessage dnnFormWarning'><p>" +
-								 Localization.GetString("NoHistory", LocalResourceFile) + @"</p><a class='dnnPrimaryAction' href='" + Links.EditTag(ModuleContext, ModuleContext.TabId, Model.SelectedCoreTerm.Name) + @"'>" +  Localization.GetString("Improve", LocalResourceFile) + @"</a></div>";
+								 Localization.GetString("NoHistory", LocalResourceFile) + @"</p><a class='dnnPrimaryAction' href='" + 
+								 Links.EditTag(ModuleContext, ModuleContext.TabId, Model.SelectedCoreTerm.Name, GroupId) + @"'>" +  
+								 Localization.GetString("Improve", LocalResourceFile) + @"</a></div>";
 				}
 
 				litDescription.Text = strMessage;

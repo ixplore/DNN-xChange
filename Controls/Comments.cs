@@ -287,7 +287,9 @@ Description("Raised when the user clicks the add comment button.")]
 
 				objComment.CommentId = Controller.AddComment(objComment);
 
-				var questionUrl = Links.ViewQuestion(Question.PostId, Question.Title, ModContext.PortalSettings.ActiveTab, ModContext.PortalSettings);
+				var _groupLink = Context.Request.QueryString["groupid"] ?? "0";
+				var questionUrl = Links.ViewQuestion(Question.PostId, Question.Title, ModContext.PortalSettings.ActiveTab, ModContext.PortalSettings, 
+					_groupLink == "0" ? 0 : int.Parse(_groupLink));
 				var cntJournal = new Journal();
 				cntJournal.AddCommentToJournal(Question, objComment, Question.Title, ModContext.PortalId, ModContext.PortalSettings.UserId, questionUrl);
 			}

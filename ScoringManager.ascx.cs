@@ -36,6 +36,14 @@ namespace DotNetNuke.DNNQA
 	[PresenterBinding(typeof(ScoringManagerPresenter))]
 	public partial class ScoringManager : ModuleView<ScoringManagerModel>, IScoringManagerView
 	{
+		#region Private Members
+
+		private int GroupId
+		{
+			get { return (Request.QueryString["groupid"] == null) ? 0 : int.Parse(Request.QueryString["groupid"].ToString()); }
+		}
+
+		#endregion
 
 		#region Public Events
 
@@ -103,7 +111,7 @@ namespace DotNetNuke.DNNQA
 			dntbVotedQUp.Text = colUserScoring.Single(s => s.Key == Constants.UserScoringActions.VotedUpQuestion.ToString()).Value.ToString();
 			dntbAcceptdQAnswer.Text = colUserScoring.Single(s => s.Key == Constants.UserScoringActions.AcceptedQuestionAnswer.ToString()).Value.ToString();
 
-			hlCancel.NavigateUrl = Links.Home(ModuleContext.TabId);
+			hlCancel.NavigateUrl = Links.Home(ModuleContext.TabId,GroupId);
 		}
 
 		#endregion

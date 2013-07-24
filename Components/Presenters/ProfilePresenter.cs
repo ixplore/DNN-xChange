@@ -223,7 +223,10 @@ namespace DotNetNuke.DNNQA.Components.Presenters {
 
 			var tc = new TabController();
 			var objTab = tc.GetTab(e.QuestionInfo.TabID, ModuleContext.PortalSettings.PortalId, false);
-			e.QuestionTitleLink.NavigateUrl = Links.ViewQuestion(e.QuestionInfo.ParentId, e.QuestionInfo.Title, objTab, ModuleContext.PortalSettings);
+
+			var _groupLink = Request.QueryString["groupid"] ?? "0";
+			e.QuestionTitleLink.NavigateUrl = Links.ViewQuestion(e.QuestionInfo.ParentId, e.QuestionInfo.Title, objTab, 
+				ModuleContext.PortalSettings, _groupLink == "0" ? 0 : int.Parse(_groupLink));
 			e.QuestionTitleLink.Text = e.QuestionInfo.Title;
 		}
 

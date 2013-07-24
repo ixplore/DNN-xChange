@@ -105,6 +105,10 @@
 				<dnn:label id="dnnlblEnableRSS" runat="server" controlname="chkEnableRSS" suffix=":" />
 				<asp:CheckBox ID="chkEnableRSS" runat="server" />
 			</div>
+			<div class="dnnFormItem">
+				<dnn:label id="dnnlblCacheTimeout" runat="server" controlname="dntxtbxCacheTimeout" suffix=":" />
+				<dnnweb:DnnNumericTextBox ID="dntxtbxCacheTimeout" runat="server" MinValue="1" MaxValue="1200" NumberFormat-DecimalDigits="0" CssClass="dnnFormRequired" />
+			</div>
 		</fieldset>
 		<h2 id="dnnSitePanel-qaThresholdSettings" class="dnnFormSectionHead"><a href=""><%= Localization.GetString("ThresholdSettings", LocalResourceFile) %></a></h2>
 		<fieldset>

@@ -364,9 +364,9 @@ namespace DotNetNuke.DNNQA.Components.Common
         /// <param name="defaultPage"></param>
         /// <param name="modContext"></param>
         /// <remarks>In this method we don't really want to override the dnn stuff, we simply want to add the OG stuff.</remarks>
-        public static void SetHomePageMeta(CDefault defaultPage, ModuleInstanceContext modContext)
+		public static void SetHomePageMeta(CDefault defaultPage, ModuleInstanceContext modContext,int groupId)
         {
-            var link = Links.Home(modContext.TabId);
+            var link = Links.Home(modContext.TabId,groupId);
             var content = defaultPage.Description;
             var title = defaultPage.Title;
             var keyWords = defaultPage.KeyWords;
@@ -399,11 +399,11 @@ namespace DotNetNuke.DNNQA.Components.Common
         /// <param name="objQuestion"></param>
         /// <param name="modContext"></param>
         /// <remarks>Need to wire in page to accept page param in URL.</remarks>
-        public static void SetQuestionPageMeta(CDefault defaultPage, QuestionInfo objQuestion, ModuleInstanceContext modContext)
+        public static void SetQuestionPageMeta(CDefault defaultPage, QuestionInfo objQuestion, ModuleInstanceContext modContext, int groupId)
         {
             var title = TruncateString(objQuestion.Title + " - " + modContext.PortalSettings.PortalName, Constants.SeoTitleLimit, false);
             var content = TruncateString(objQuestion.Body, Constants.SeoDescriptionLimit, false);
-            var link = Links.ViewQuestion(objQuestion.PostId, objQuestion.Title, modContext.PortalSettings.ActiveTab, modContext.PortalSettings);
+            var link = Links.ViewQuestion(objQuestion.PostId, objQuestion.Title, modContext.PortalSettings.ActiveTab, modContext.PortalSettings, groupId);
             var keyWords = "";
             var keyCount = 1;
             var count = keyCount;
@@ -437,41 +437,43 @@ namespace DotNetNuke.DNNQA.Components.Common
             SetPagingMeta(defaultPage, prevLink, nextLink);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="defaultPage"></param>
-        /// <param name="objTerm"></param>
-        /// <param name="modContext"></param>
-        /// <param name="pageTitle"></param>
-        /// <param name="description"></param>
-        /// <remarks>Only primary module should set meta data.</remarks>
-        public static void SetTermHistoryPageMeta(CDefault defaultPage, TermInfo objTerm, ModuleInstanceContext modContext, string pageTitle, string description)
+	    /// <summary>
+	    /// 
+	    /// </summary>
+	    /// <param name="defaultPage"></param>
+	    /// <param name="objTerm"></param>
+	    /// <param name="modContext"></param>
+	    /// <param name="pageTitle"></param>
+	    /// <param name="description"></param>
+	    /// <param name="groupId"></param>
+	    /// <remarks>Only primary module should set meta data.</remarks>
+	    public static void SetTermHistoryPageMeta(CDefault defaultPage, TermInfo objTerm, ModuleInstanceContext modContext, string pageTitle, string description, int groupId)
         {
-            var title = TruncateString(pageTitle + " - " + modContext.PortalSettings.PortalName, Constants.SeoTitleLimit, false);
-            var content = TruncateString(description, Constants.SeoDescriptionLimit, false);
-            var link = Links.ViewTagDetail(modContext, modContext.TabId, objTerm.Name);
-            var keyWords = objTerm.Name;
+            var _title = TruncateString(pageTitle + " - " + modContext.PortalSettings.PortalName, Constants.SeoTitleLimit, false);
+            var _content = TruncateString(description, Constants.SeoDescriptionLimit, false);
+            var _link = Links.ViewTagDetail(modContext, modContext.TabId, objTerm.Name, groupId);
+            var _keyWords = objTerm.Name;
 
-            SetPageMetaAndOpenGraph(defaultPage, modContext, title, content, keyWords, link);
+            SetPageMetaAndOpenGraph(defaultPage, modContext, _title, _content, _keyWords, _link);
         }
 
-        /// <summary>
-        /// Sets the Page Meta information for the TagDetail.ascx view. 
-        /// </summary>
-        /// <param name="defaultPage"></param>
-        /// <param name="objTerm"></param>
-        /// <param name="modContext"></param>
-        /// <param name="pageTitle"></param>
-        /// <param name="description"></param>
-        public static void SetTermPageMeta(CDefault defaultPage, TermInfo objTerm, ModuleInstanceContext modContext, string pageTitle, string description)
+	    /// <summary>
+	    /// Sets the Page Meta information for the TagDetail.ascx view. 
+	    /// </summary>
+	    /// <param name="defaultPage"></param>
+	    /// <param name="objTerm"></param>
+	    /// <param name="modContext"></param>
+	    /// <param name="pageTitle"></param>
+	    /// <param name="description"></param>
+	    /// <param name="groupId"></param>
+	    public static void SetTermPageMeta(CDefault defaultPage, TermInfo objTerm, ModuleInstanceContext modContext, string pageTitle, string description, int groupId)
         {
-            var title = TruncateString(pageTitle + " - " + modContext.PortalSettings.PortalName, Constants.SeoTitleLimit, false);
-            var content = TruncateString(description, Constants.SeoDescriptionLimit, false);
-            var link = Links.ViewTagDetail(modContext, modContext.TabId, objTerm.Name);
-            var keyWords = objTerm.Name;
+            var _title = TruncateString(pageTitle + " - " + modContext.PortalSettings.PortalName, Constants.SeoTitleLimit, false);
+            var _content = TruncateString(description, Constants.SeoDescriptionLimit, false);
+            var _link = Links.ViewTagDetail(modContext, modContext.TabId, objTerm.Name, groupId);
+            var _keyWords = objTerm.Name;
 
-            SetPageMetaAndOpenGraph(defaultPage, modContext, title, content, keyWords, link);
+            SetPageMetaAndOpenGraph(defaultPage, modContext, _title, _content, _keyWords, _link);
         }
 
         #endregion

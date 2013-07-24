@@ -142,9 +142,12 @@ namespace DotNetNuke.DNNQA.Providers.Data.SqlDataProvider {
 
 		#region Posts
 
-		public IDataReader GetHomeQuestions(int moduleId, int excludeCount, int minScore)
+		public IDataReader GetHomeQuestions(int moduleId, int excludeCount, int minScore, int groupId)
 		{
-			return SqlHelper.ExecuteReader(ConnectionString, GetFullyQualifiedName("Question_GetHome"), moduleId, excludeCount, minScore);
+			if(groupId==0)
+				return SqlHelper.ExecuteReader(ConnectionString, GetFullyQualifiedName("Question_GetHome"), moduleId, excludeCount, minScore);
+			
+			return SqlHelper.ExecuteReader(ConnectionString, GetFullyQualifiedName("Question_GetHomeGroup"), moduleId, excludeCount, minScore,groupId);
 		}
 
 		#region User
@@ -171,13 +174,15 @@ namespace DotNetNuke.DNNQA.Providers.Data.SqlDataProvider {
 
 		#endregion
 
-		public IDataReader KeywordSearch(int moduleId, string keyword)
+		public IDataReader KeywordSearch(int moduleId, string keyword, int groupId)
 		{
-			return SqlHelper.ExecuteReader(ConnectionString, GetFullyQualifiedName("Question_KeywordSearch"), moduleId, GetNull(keyword));
+			if (groupId == 0)
+				return SqlHelper.ExecuteReader(ConnectionString, GetFullyQualifiedName("Question_KeywordSearch"), moduleId, GetNull(keyword));
+			return SqlHelper.ExecuteReader(ConnectionString, GetFullyQualifiedName("Question_KeywordSearchGroup"), moduleId, GetNull(keyword),groupId);
 		}
 
-		public IDataReader TermSearch(int moduleId, int pageSize, string term) {
-			return SqlHelper.ExecuteReader(ConnectionString, GetFullyQualifiedName("Question_TermSearch"), moduleId, pageSize, term);
+		public IDataReader TermSearch(int moduleId, int pageSize, string term, int groupId) {
+			return SqlHelper.ExecuteReader(ConnectionString, GetFullyQualifiedName("Question_TermSearch"), moduleId, pageSize, term, groupId);
 		}
 
 		public IDataReader SearchQuestionTitles(int moduleId, string searchPhrase)
@@ -215,8 +220,12 @@ namespace DotNetNuke.DNNQA.Providers.Data.SqlDataProvider {
 			return SqlHelper.ExecuteReader(ConnectionString, GetFullyQualifiedName("Question_GetSitemap"), portalId);
 		}
 
-		public int AddPost(string title, string body, int bounty, int parentId, int portalId, int contentItemId, bool approved, DateTime approvedDate, int createdUserId, DateTime createdDate) {
-			return Convert.ToInt32(SqlHelper.ExecuteScalar(ConnectionString, GetFullyQualifiedName("Post_Add"), title, body, bounty, parentId, portalId, contentItemId, approved, GetNull(approvedDate), createdUserId, createdDate));
+		public int AddPost(string title, string body, int bounty, int parentId, int portalId, int contentItemId, bool approved,
+							DateTime approvedDate, int createdUserId, DateTime createdDate, int groupId)
+		{
+			return Convert.ToInt32(SqlHelper.ExecuteScalar(ConnectionString, GetFullyQualifiedName("Post_Add"), title, body, bounty,
+						parentId, portalId, contentItemId, approved,GetNull(approvedDate), createdUserId, createdDate, groupId));
+			
 		}
 
 // ReSharper disable InconsistentNaming
@@ -335,9 +344,9 @@ namespace DotNetNuke.DNNQA.Providers.Data.SqlDataProvider {
 			return SqlHelper.ExecuteReader(ConnectionString, GetFullyQualifiedName("Term_GetByContentItem"), contentItemId, vocabularyId);
 		}
 
-		public IDataReader GetTermsByContentType(int portalId, int contentTypeId, int moduleId, int vocabularyId)
+		public IDataReader GetTermsByContentType(int portalId, int contentTypeId, int moduleId, int vocabularyId, int groupId)
 		{
-			return SqlHelper.ExecuteReader(ConnectionString, GetFullyQualifiedName("Term_GetByContentType"), portalId, contentTypeId, moduleId, vocabularyId);
+			return SqlHelper.ExecuteReader(ConnectionString, GetFullyQualifiedName("Term_GetByContentType"), portalId, contentTypeId, moduleId, vocabularyId,groupId);
 		}
 
 		#region Term History

@@ -237,6 +237,14 @@ if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{o
 	DROP PROCEDURE  {databaseOwner}{objectQualifier}DNNQA_Term_GetByContentType
 GO
 
+/*------- v01.02.00 --------- */
+
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}DNNQA_Question_GetHomeGroup') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+	DROP PROCEDURE  {databaseOwner}{objectQualifier}DNNQA_Question_GetHomeGroup
+GO
+
+/*------- v01.02.00 Ends ---  */
+
 if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}vw_DNNQA_Posts') and OBJECTPROPERTY(id, N'IsView') = 1)
 	DROP VIEW {databaseOwner}{objectQualifier}vw_DNNQA_Posts
 GO
@@ -367,3 +375,19 @@ SET @ContentTypeID = ( SELECT   ContentTypeID
 
 DELETE  {databaseOwner}{objectQualifier}ContentItems
 WHERE   ContentTypeID = @ContentTypeID
+
+/*----- ver 01.02.00 Cleanup ------*/
+IF  EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'{objectQualifier}DF_DNNQA_GroupQuestions_IsDefault') AND type = 'D')
+	BEGIN
+		ALTER TABLE {databaseOwner}{objectQualifier}DNNQA_GroupQuestions DROP CONSTRAINT {objectQualifier}DF_DNNQA_GroupQuestions_IsDefault
+	END
+GO
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}{objectQualifier}DNNQA_GroupQuestions') AND type in (N'U'))
+	DROP TABLE {databaseOwner}{objectQualifier}DNNQA_GroupQuestions
+GO
+
+/****** Object:  StoredProcedure {databaseOwner}{objectQualifier}[DNNQA_Question_KeywordSearchGroup]    Script Date: 6/23/2013 4:47:53 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}{objectQualifier}[DNNQA_Question_KeywordSearchGroup]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE {databaseOwner}{objectQualifier}[DNNQA_Question_KeywordSearchGroup]
+GO

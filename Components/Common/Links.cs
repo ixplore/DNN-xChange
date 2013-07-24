@@ -31,14 +31,18 @@ namespace DotNetNuke.DNNQA.Components.Common {
 	/// </summary>
 	public class Links {
 
-		public static string Home(int tabId)
+		public static string Home(int tabId, int groupId)
 		{
-			return DotNetNuke.Common.Globals.NavigateURL(tabId, "", "");
+			return groupId == 0 
+				? DotNetNuke.Common.Globals.NavigateURL(tabId, "", "") 
+				: DotNetNuke.Common.Globals.NavigateURL(tabId, "", "groupid=" + groupId);
 		}
 
-		public static string AskQuestion(ModuleInstanceContext modContext)
+		public static string AskQuestion(ModuleInstanceContext modContext, int groupId)
 		{
-			return modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Ask.ToString().ToLower());
+			return groupId == 0 
+			? modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Ask.ToString().ToLower())
+			: modContext.NavigateUrl(modContext.TabId, "", false, "groupid=" + groupId, "view=" + Constants.PageScope.Ask.ToString().ToLower());
 		}
 
 		public static string EditPost(ModuleInstanceContext modContext, int postId)
@@ -46,26 +50,33 @@ namespace DotNetNuke.DNNQA.Components.Common {
 			return modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.EditPost.ToString().ToLower(), "id=" + postId);
 		}
 
-	    /// <summary>
-	    /// 
-	    /// </summary>
-	    /// <param name="modContext"></param>
-	    /// <param name="tabId"></param>
-	    /// <param name="termName">The taxonomy term the user is attempting to edit.</param>
-	    /// <returns></returns>
-	    public static string EditTag(ModuleInstanceContext modContext, int tabId, string termName)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="modContext"></param>
+		/// <param name="tabId"></param>
+		/// <param name="termName">The taxonomy term the user is attempting to edit.</param>
+		/// <param name="groupId"></param>
+		/// <returns></returns>
+		public static string EditTag(ModuleInstanceContext modContext, int tabId, string termName, int groupId)
 		{
-			return modContext.NavigateUrl(tabId, "", false, "view=" + Constants.PageScope.EditTerm.ToString().ToLower(), "term=" + HttpUtility.UrlEncode(termName));
+			return groupId == 0
+			? modContext.NavigateUrl(tabId, "", false, "view=" + Constants.PageScope.EditTerm.ToString().ToLower(), "term=" + HttpUtility.UrlEncode(termName))
+			: modContext.NavigateUrl(tabId, "", false, "groupid=" + groupId, "view=" + Constants.PageScope.EditTerm.ToString().ToLower(), "term=" + HttpUtility.UrlEncode(termName));
 		}
 
-		public static string KeywordSearch(ModuleInstanceContext modContext, string searchString)
+		public static string KeywordSearch(ModuleInstanceContext modContext, string searchString, int groupId)
 		{
-			return modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "keyword=" + HttpUtility.UrlEncode(searchString));
+			return groupId==0
+			? modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "keyword=" + HttpUtility.UrlEncode(searchString))
+			: modContext.NavigateUrl(modContext.TabId, "", false, "groupid="+groupId, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "keyword=" + HttpUtility.UrlEncode(searchString));
 		}
 
-		public static string KeywordSearchSorted(ModuleInstanceContext modContext, string keyword, string sortBy)
+		public static string KeywordSearchSorted(ModuleInstanceContext modContext, string keyword, string sortBy, int groupId)
 		{
-			return modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "keyword=" + keyword, "sort=" + sortBy);
+			return groupId==0 
+			? modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "keyword=" + keyword, "sort=" + sortBy)
+			: modContext.NavigateUrl(modContext.TabId, "", false, "groupid="+groupId, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "keyword=" + keyword, "sort=" + sortBy);
 		}
 
 		public static string ViewBadge(ModuleInstanceContext modContext, string name, int id)
@@ -73,9 +84,11 @@ namespace DotNetNuke.DNNQA.Components.Common {
 			return modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Badge.ToString().ToLower(), "name=" + id, name);
 		}
 
-		public static string ViewBadges(ModuleInstanceContext modContext)
+		public static string ViewBadges(ModuleInstanceContext modContext, int groupId)
 		{
-			return modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Badges.ToString().ToLower());
+			return groupId == 0
+				       ? modContext.NavigateUrl(modContext.TabId, "", false,"view=" + Constants.PageScope.Badges.ToString().ToLower())
+				       : modContext.NavigateUrl(modContext.TabId, "", false, "groupid=" + groupId,"view=" + Constants.PageScope.Badges.ToString().ToLower());
 		}
 
 		public static string ViewFilteredBadges(ModuleInstanceContext modContext, string filter)
@@ -83,9 +96,11 @@ namespace DotNetNuke.DNNQA.Components.Common {
 			return modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Badges.ToString().ToLower(), "filter=" + filter);
 		}
 
-		public static string ViewQuestion(int questionId, int tabId, PortalSettings ps)
+		public static string ViewQuestion(int questionId, int tabId, PortalSettings ps, int groupId)
 		{
-			return DotNetNuke.Common.Globals.NavigateURL(tabId,ps,"", "view=" + Constants.PageScope.Question.ToString().ToLower(), "id=" + questionId);   
+			return groupId == 0 
+				? DotNetNuke.Common.Globals.NavigateURL(tabId, ps, "", "view=" + Constants.PageScope.Question.ToString().ToLower(), "id=" + questionId) 
+				: DotNetNuke.Common.Globals.NavigateURL(tabId,ps,"", "groupid=" + groupId, "view=" + Constants.PageScope.Question.ToString().ToLower(), "id=" + questionId);
 		}
 
 		/// <summary>
@@ -96,7 +111,7 @@ namespace DotNetNuke.DNNQA.Components.Common {
 		/// <param name="tab"></param>
 		/// <param name="ps"></param>
 		/// <returns></returns>
-		public static string ViewQuestion(int questionId, string questionTitle, TabInfo tab, PortalSettings ps)
+		public static string ViewQuestion(int questionId, string questionTitle, TabInfo tab, PortalSettings ps, int groupId)
 		{
 			if (Utils.IsFriendlyUrlModuleInstalled && Utils.UseFriendlyUrls)
 			{
@@ -106,16 +121,14 @@ namespace DotNetNuke.DNNQA.Components.Common {
 				//{
 				//    return DotNetNuke.Common.Globals.NavigateURL(tab.TabID).Replace(".aspx", "") + ("/Question/" + questionId + "/" + Utils.CreateFriendlySlug(questionTitle));
 				//}
-
+				var _groupLink = (groupId == 0) ? "/" : "/groupid/" + groupId + "/";
 				if (ps.HomeTabId == tab.TabID && DotNetNuke.Common.Globals.NavigateURL(tab.TabID).EndsWith("/"))
 				{
-					return DotNetNuke.Common.Globals.NavigateURL(tab.TabID).Replace(".aspx", "") + tab.IndentedTabName.Replace(" ","") + ("/" + Utils.GetQuestionUrlName() + "/" + questionId + "/" + Utils.CreateFriendlySlug(questionTitle) + ".aspx");
+					return DotNetNuke.Common.Globals.NavigateURL(tab.TabID).Replace(".aspx", "") + tab.IndentedTabName.Replace(" ", "") + (_groupLink + Utils.GetQuestionUrlName() + "/" + questionId + "/" + Utils.CreateFriendlySlug(questionTitle) + ".aspx");
 				}
-				return DotNetNuke.Common.Globals.NavigateURL(tab.TabID).Replace(".aspx", "") + ("/" + Utils.GetQuestionUrlName() + "/" + questionId + "/" + Utils.CreateFriendlySlug(questionTitle) + ".aspx");
-				
-				
+				return DotNetNuke.Common.Globals.NavigateURL(tab.TabID).Replace(".aspx", "") + (_groupLink + Utils.GetQuestionUrlName() + "/" + questionId + "/" + Utils.CreateFriendlySlug(questionTitle) + ".aspx");
 			}
-			return ViewQuestion(questionId, tab.TabID, ps);
+			return ViewQuestion(questionId, tab.TabID, ps,groupId);
 		}
 
 		/// <summary>
@@ -134,32 +147,56 @@ namespace DotNetNuke.DNNQA.Components.Common {
 			return modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Question.ToString().ToLower(), "id=" + questionId, "sort=" + sortBy);
 		}
 
-		public static string ViewQuestions(ModuleInstanceContext modContext)
+		public static string ViewQuestions(ModuleInstanceContext modContext, int groupId)
 		{
-			return modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "type=questions");
+			return groupId == 0
+				       ? modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "type=questions")
+				       : modContext.NavigateUrl(modContext.TabId, "", false,"groupid=" + groupId, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "type=questions");
 		}
 
-		public static string ViewQuestionsPaged(ModuleInstanceContext modContext, int page)
+		public static string ViewQuestionsPaged(ModuleInstanceContext modContext, int page, int groupId)
 		{
-			return page > 1 ? modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "type=questions", "page=" + page) : ViewQuestions(modContext);
+			return page > 1 
+				? modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "type=questions", "page=" + page) 
+				: ViewQuestions(modContext, groupId);
 		}
 
-		public static string ViewQuestionsSorted(ModuleInstanceContext modContext, string sortBy, bool unanswered, int page)
+		public static string ViewQuestionsSorted(ModuleInstanceContext modContext, string sortBy, bool unanswered, int page, int groupId)
 		{
 			if (unanswered)
-			{
-				return ViewUnansweredQuestions(modContext, page, sortBy);
-			}
-			return page > 1 ? modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "type=questions", "sort=" + sortBy, "page=" + page) : modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "type=questions", "sort=" + sortBy);
+				return ViewUnansweredQuestions(modContext, page, sortBy, groupId);
+
+			if(groupId==0)
+				return page > 1 
+					? modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "type=questions", "sort=" + sortBy, "page=" + page) 
+					: modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "type=questions", "sort=" + sortBy);
+
+			return page > 1
+				? modContext.NavigateUrl(modContext.TabId, "", false, "groupid=" + groupId, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "type=questions", "sort=" + sortBy, "page=" + page)
+				: modContext.NavigateUrl(modContext.TabId, "", false, "groupid=" + groupId, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "type=questions", "sort=" + sortBy);
 		}
 
-		public static string ViewUnansweredQuestions(ModuleInstanceContext modContext, int page, string sortBy)
+		public static string ViewUnansweredQuestions(ModuleInstanceContext modContext, int page, string sortBy, int groupId)
 		{
 			if (page > 1)
 			{
-				return sortBy.Length > 0 ? modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "type=questions", "sort=" + sortBy, "unanswered=true", "page=" + page) : modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "type=questions", "unanswered=true", "page=" + page);
+				if(groupId==0)
+					return sortBy.Length > 0 ? 
+						modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "type=questions", "sort=" + sortBy, "unanswered=true", "page=" + page) 
+						: modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "type=questions", "unanswered=true", "page=" + page);
+
+				return sortBy.Length > 0 ?
+					       modContext.NavigateUrl(modContext.TabId, "", false, "groupid=" + groupId, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "type=questions", "sort=" + sortBy, "unanswered=true", "page=" + page)
+					       : modContext.NavigateUrl(modContext.TabId, "", false, "groupid=" + groupId, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "type=questions", "unanswered=true", "page=" + page);
 			}
-			return sortBy.Length > 0 ? modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "type=questions", "sort=" + sortBy, "unanswered=true") : modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "type=questions", "unanswered=true");
+			if(groupId==0)
+				return sortBy.Length > 0 
+					? modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "type=questions", "sort=" + sortBy, "unanswered=true") 
+					: modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "type=questions", "unanswered=true");
+
+			return sortBy.Length > 0
+				? modContext.NavigateUrl(modContext.TabId, "", false, "groupid=" + groupId, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "type=questions", "sort=" + sortBy, "unanswered=true")
+				: modContext.NavigateUrl(modContext.TabId, "", false, "groupid=" + groupId, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "type=questions", "unanswered=true");
 		}
 
 		public static string ViewPrivilege(ModuleInstanceContext modContext, string privilegeName)
@@ -167,14 +204,18 @@ namespace DotNetNuke.DNNQA.Components.Common {
 			return privilegeName != string.Empty ? modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Convert.ToString(Constants.PageScope.Privileges).ToLower(), "privilege=" + privilegeName) : modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Convert.ToString(Constants.PageScope.Privileges).ToLower(), "");
 		}
 
-		public static string ViewTags(ModuleInstanceContext modContext)
+		public static string ViewTags(ModuleInstanceContext modContext, int groupId)
 		{
-			return modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Tags, "");
+			return groupId == 0
+					   ? modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Tags, "")
+					   : modContext.NavigateUrl(modContext.TabId, "", false, "groupid=" + groupId, "view=" + Constants.PageScope.Tags, "");
 		}
 
-		public static string ViewTagsPaged(ModuleInstanceContext modContext, int page)
+		public static string ViewTagsPaged(ModuleInstanceContext modContext, int page, int groupId)
 		{
-			return page > 1 ? modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Tags.ToString().ToLower(), "page=" + page) : ViewTags(modContext);
+			return page > 1 
+				? modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Tags.ToString().ToLower(), "page=" + page) 
+				: ViewTags(modContext,groupId);
 		}
 
 		/// <summary>
@@ -184,9 +225,16 @@ namespace DotNetNuke.DNNQA.Components.Common {
 		/// <param name="sortBy"></param>
 		/// <param name="page"></param>
 		/// <returns></returns>
-		public static string ViewTagsSorted(ModuleInstanceContext modContext, string sortBy, int page)
+		public static string ViewTagsSorted(ModuleInstanceContext modContext, string sortBy, int page, int groupId)
 		{
-			return page > 1 ? modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Tags.ToString().ToLower(), "sort=" + sortBy, "page=" + page) : modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Tags.ToString().ToLower(), "sort=" + sortBy);
+			if(groupId==0)
+			return page > 1 
+				? modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Tags.ToString().ToLower(), "sort=" + sortBy, "page=" + page) 
+				: modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Tags.ToString().ToLower(), "sort=" + sortBy);
+
+			return page > 1
+				? modContext.NavigateUrl(modContext.TabId, "", false, "groupid=" + groupId, "view=" + Constants.PageScope.Tags.ToString().ToLower(), "sort=" + sortBy, "page=" + page)
+				: modContext.NavigateUrl(modContext.TabId, "", false, "groupid=" + groupId, "view=" + Constants.PageScope.Tags.ToString().ToLower(), "sort=" + sortBy);
 		}
 
 		/// <summary>
@@ -196,10 +244,18 @@ namespace DotNetNuke.DNNQA.Components.Common {
 		/// <param name="filter"></param>
 		/// <param name="sortBy"></param>
 		/// <param name="page"></param>
+		/// <param name="groupId"></param>
 		/// <returns></returns>
-		public static string ViewTagsSortedAndFiltered(ModuleInstanceContext modContext, string filter, string sortBy, int page)
+		public static string ViewTagsSortedAndFiltered(ModuleInstanceContext modContext, string filter, string sortBy, int page, int groupId)
 		{
-			return page > 1 ? modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Tags.ToString().ToLower(), "filter=" + HttpUtility.UrlEncode(filter), "sort=" + sortBy, "page=" + page) : modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Tags.ToString().ToLower(), "filter=" + HttpUtility.UrlEncode(filter), "sort=" + sortBy);
+			if (groupId == 0)
+				return page > 1 
+					? modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Tags.ToString().ToLower(), "filter=" + HttpUtility.UrlEncode(filter), "sort=" + sortBy, "page=" + page) 
+					: modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Tags.ToString().ToLower(), "filter=" + HttpUtility.UrlEncode(filter), "sort=" + sortBy);
+			
+			return page > 1
+				? modContext.NavigateUrl(modContext.TabId, "", false, "groupid=" + groupId, "view=" + Constants.PageScope.Tags.ToString().ToLower(), "filter=" + HttpUtility.UrlEncode(filter), "sort=" + sortBy, "page=" + page)
+				: modContext.NavigateUrl(modContext.TabId, "", false, "groupid=" + groupId, "view=" + Constants.PageScope.Tags.ToString().ToLower(), "filter=" + HttpUtility.UrlEncode(filter), "sort=" + sortBy);
 		}
 
 		/// <summary>
@@ -207,10 +263,13 @@ namespace DotNetNuke.DNNQA.Components.Common {
 		/// </summary>
 		/// <param name="modContext"></param>
 		/// <param name="termName">The taxonomy term the user wants to view the details of.</param>
+		/// <param name="groupId"></param>
 		/// <returns></returns>
-		public static string ViewTagDetail(ModuleInstanceContext modContext, int tabId, string termName)
+		public static string ViewTagDetail(ModuleInstanceContext modContext, int tabId, string termName, int groupId)
 		{
-			return modContext.NavigateUrl(tabId, "", false, "view=" + Constants.PageScope.TermDetail.ToString().ToLower(), "term=" + HttpUtility.UrlEncode(termName));
+			return groupId == 0
+						? modContext.NavigateUrl(tabId, "", false, "view=" + Constants.PageScope.TermDetail.ToString().ToLower(),"term=" + HttpUtility.UrlEncode(termName))
+						: modContext.NavigateUrl(tabId, "", false, "groupid=" + groupId, "view=" + Constants.PageScope.TermDetail.ToString().ToLower(), "term=" + HttpUtility.UrlEncode(termName));
 		}
 
 		public static string ViewTermSynonyms(ModuleInstanceContext modContext, string termName)
@@ -223,7 +282,7 @@ namespace DotNetNuke.DNNQA.Components.Common {
 			return DotNetNuke.Common.Globals.NavigateURL(tabId, ps,"", "view=" + Constants.PageScope.Browse.ToString().ToLower(), "tag=" + HttpUtility.UrlEncode(termName));
 		}
 
-		public static string ViewTaggedQuestions(string termName, TabInfo tab, PortalSettings ps)
+		public static string ViewTaggedQuestions(string termName, TabInfo tab, PortalSettings ps, int groupId)
 		{
 			if (Utils.IsFriendlyUrlModuleInstalled && Utils.UseFriendlyUrls)
 			{
@@ -240,12 +299,16 @@ namespace DotNetNuke.DNNQA.Components.Common {
 				}
 				return DotNetNuke.Common.Globals.NavigateURL(tab.TabID).Replace(".aspx", "") + ("/" + Utils.GetTagUrlName(ps) + "/" + HttpUtility.UrlEncode(termName) + ".aspx");
 			}
-			return DotNetNuke.Common.Globals.NavigateURL(tab.TabID, ps, "", "view=" + Constants.PageScope.Browse.ToString().ToLower(), "tag=" + HttpUtility.UrlEncode(termName));
+			return groupId == 0
+			? DotNetNuke.Common.Globals.NavigateURL(tab.TabID, ps, "", "view=" + Constants.PageScope.Browse.ToString().ToLower(), "tag=" + HttpUtility.UrlEncode(termName))
+			: DotNetNuke.Common.Globals.NavigateURL(tab.TabID, ps, "",  "groupid="+groupId, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "tag=" + HttpUtility.UrlEncode(termName));
 		}
 
-		public static string ViewTaggedQuestionsSorted(ModuleInstanceContext modContext, string termName, string sortBy)
+		public static string ViewTaggedQuestionsSorted(ModuleInstanceContext modContext, string termName, string sortBy, int groupId)
 		{
-			return modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "tag=" + HttpUtility.UrlEncode(termName), "sort=" + sortBy);
+			return groupId == 0
+			? modContext.NavigateUrl(modContext.TabId, "", false, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "tag=" + HttpUtility.UrlEncode(termName), "sort=" + sortBy)
+			: modContext.NavigateUrl(modContext.TabId, "", false, "groupid="+groupId, "view=" + Constants.PageScope.Browse.ToString().ToLower(), "tag=" + HttpUtility.UrlEncode(termName), "sort=" + sortBy);
 		}
 
 		/// <summary>

@@ -29,166 +29,166 @@ using DotNetNuke.DNNQA.Components.Controllers;
 namespace DotNetNuke.DNNQA.Components.Modules
 {
 
-    public class UrlModule : IHttpModule
-    {
+	public class UrlModule : IHttpModule
+	{
 
-        #region IHttpModule Members
+		#region IHttpModule Members
 
-        public void Dispose()
-        {
-            
-        }
+		public void Dispose()
+		{
+			
+		}
 
-        public void Init(HttpApplication context)
-        {
-            context.BeginRequest += OnBeginRequest;
-        }
+		public void Init(HttpApplication context)
+		{
+			context.BeginRequest += OnBeginRequest;
+		}
 
-        #endregion
+		#endregion
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="e"></param>
-        public void OnBeginRequest(Object source, EventArgs e)
-        {
-            try
-            {
-                var app = (HttpApplication)source;
-                var context = app.Context;
-                PortalSettings portalSettings;
-                PortalAliasController pac = new PortalAliasController();
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="e"></param>
+		public void OnBeginRequest(Object source, EventArgs e)
+		{
+			try
+			{
+				var app = (HttpApplication)source;
+				var context = app.Context;
+				PortalSettings portalSettings;
+				PortalAliasController pac = new PortalAliasController();
 
-                PortalInfo portalInfo;
-                //var requestedPath = app.Request.Url.AbsoluteUri;
-                PortalAliasInfo objPortalAlias;
-          
-                 var url = context.Request.RawUrl.Replace("?" + context.Request.QueryString, "").ToLower();
+				PortalInfo portalInfo;
+				//var requestedPath = app.Request.Url.AbsoluteUri;
+				PortalAliasInfo objPortalAlias;
+		  
+				 var url = context.Request.RawUrl.Replace("?" + context.Request.QueryString, "").ToLower();
 
-                if (Utils.UseFriendlyUrls && (url.EndsWith(".aspx") || url.EndsWith("/")))
-                {
-                    var myAlias = DotNetNuke.Common.Globals.GetDomainName(app.Request, true);
+				if (Utils.UseFriendlyUrls && (url.EndsWith(".aspx") || url.EndsWith("/")))
+				{
+					var myAlias = DotNetNuke.Common.Globals.GetDomainName(app.Request, true);
 
-                    do
-                    {
-                        objPortalAlias = PortalAliasController.GetPortalAliasInfo(myAlias);
+					do
+					{
+						objPortalAlias = PortalAliasController.GetPortalAliasInfo(myAlias);
 
-                        if (objPortalAlias != null)
-                        {
-                            break;
-                        }
+						if (objPortalAlias != null)
+						{
+							break;
+						}
 
-                        var slashIndex = myAlias.LastIndexOf('/');
-                        myAlias = slashIndex > 1 ? myAlias.Substring(0, slashIndex) : "";
-                    } while (myAlias.Length > 0);
+						var slashIndex = myAlias.LastIndexOf('/');
+						myAlias = slashIndex > 1 ? myAlias.Substring(0, slashIndex) : "";
+					} while (myAlias.Length > 0);
 
-                    if (objPortalAlias == null)
-                    {
-                        //portalSettings = new PortalSettings(Host.HostPortalID);
-                        //var portalAlias = app.Request.Url.Host;
-                        //objPortalAlias = PortalAliasController.GetPortalAliasInfo(portalAlias);
-                        return;
-                        //if (Host.HostPortalID > Null.NullInteger)
-                        //{
-                        //    var portalAliasInfo = new PortalAliasInfo
-                        //                              {
-                        //                                  PortalID = Host.HostPortalID,
-                        //                                  HTTPAlias = portalAlias
-                        //                              };
-                        //    pac.AddPortalAlias(portalAliasInfo);
+					if (objPortalAlias == null)
+					{
+						//portalSettings = new PortalSettings(Host.HostPortalID);
+						//var portalAlias = app.Request.Url.Host;
+						//objPortalAlias = PortalAliasController.GetPortalAliasInfo(portalAlias);
+						return;
+						//if (Host.HostPortalID > Null.NullInteger)
+						//{
+						//    var portalAliasInfo = new PortalAliasInfo
+						//                              {
+						//                                  PortalID = Host.HostPortalID,
+						//                                  HTTPAlias = portalAlias
+						//                              };
+						//    pac.AddPortalAlias(portalAliasInfo);
 
-                        //objPortalAlias = PortalAliasController.GetPortalAliasInfo(portalAlias);
-                        //}
-                    }
-                    else
-                    {
-                        portalInfo = new PortalController().GetPortal(objPortalAlias.PortalID);
-                        portalSettings = new PortalSettings(portalInfo.PortalID);
-                    }
+						//objPortalAlias = PortalAliasController.GetPortalAliasInfo(portalAlias);
+						//}
+					}
+					else
+					{
+						portalInfo = new PortalController().GetPortal(objPortalAlias.PortalID);
+						portalSettings = new PortalSettings(portalInfo.PortalID);
+					}
 
-                    if (portalSettings != null)
-                    {
-                        portalSettings.PortalAlias = objPortalAlias;
+					if (portalSettings != null)
+					{
+						portalSettings.PortalAlias = objPortalAlias;
 
-                        Regex questionRegEx;
-                        Regex tagRegEx;
+						Regex questionRegEx;
+						Regex tagRegEx;
 
-                        questionRegEx = new Regex("/" + Utils.GetQuestionUrlName(portalSettings).ToLower() + "/([0-9]+)/(.+)(\\.aspx$|\\.aspx?.+)", RegexOptions.IgnoreCase);
-                        tagRegEx = new Regex("/" + Utils.GetTagUrlName(portalSettings).ToLower() + "/(.+)(\\.aspx$|\\.aspx?.+)", RegexOptions.IgnoreCase);
+						questionRegEx = new Regex("/" + Utils.GetQuestionUrlName(portalSettings).ToLower() + "/([0-9]+)/(.+)(\\.aspx$|\\.aspx?.+)", RegexOptions.IgnoreCase);
+						tagRegEx = new Regex("/" + Utils.GetTagUrlName(portalSettings).ToLower() + "/(.+)(\\.aspx$|\\.aspx?.+)", RegexOptions.IgnoreCase);
 
-                        if ((questionRegEx.IsMatch(url.ToLower()) && !questionRegEx.Match(url.ToLower()).Groups[1].Value.Contains("/")) || (tagRegEx.IsMatch(url.ToLower()) && !tagRegEx.Match(url.ToLower()).Groups[1].Value.Contains("/")))
-                        {
-                            string questionTitle;
-                            string tagName;
-                            
+						if ((questionRegEx.IsMatch(url.ToLower()) && !questionRegEx.Match(url.ToLower()).Groups[1].Value.Contains("/")) || (tagRegEx.IsMatch(url.ToLower()) && !tagRegEx.Match(url.ToLower()).Groups[1].Value.Contains("/")))
+						{
+							string questionTitle;
+							string tagName;
+							
 
-                            // JS 1/25/12: This check is for removing the .aspx from the question and tags.
-                            //             There appears to be conflicts between IIS7.5 installations that need to be address
-                            //if (HttpRuntime.UsingIntegratedPipeline)
-                            //{
-                            //    questionRegEx = new Regex("/Question/([0-9]+)/(.+)", RegexOptions.IgnoreCase);
-                            //    tagRegEx = new Regex("/Tag/(.+)", RegexOptions.IgnoreCase);
-                            //}
-                            //else
-                            //{
-                            //    questionRegEx = new Regex("/Question/([0-9]+)/(.+)\\.aspx$", RegexOptions.IgnoreCase);
-                            //    tagRegEx = new Regex("/Tag/(.+)\\.aspx$", RegexOptions.IgnoreCase);
-                            //}
+							// JS 1/25/12: This check is for removing the .aspx from the question and tags.
+							//             There appears to be conflicts between IIS7.5 installations that need to be address
+							//if (HttpRuntime.UsingIntegratedPipeline)
+							//{
+							//    questionRegEx = new Regex("/Question/([0-9]+)/(.+)", RegexOptions.IgnoreCase);
+							//    tagRegEx = new Regex("/Tag/(.+)", RegexOptions.IgnoreCase);
+							//}
+							//else
+							//{
+							//    questionRegEx = new Regex("/Question/([0-9]+)/(.+)\\.aspx$", RegexOptions.IgnoreCase);
+							//    tagRegEx = new Regex("/Tag/(.+)\\.aspx$", RegexOptions.IgnoreCase);
+							//}
 
-                            var dnnqa = new DnnqaController();
-                            var tInfo = Utils.GetTabFromUrl(portalSettings);
-                            
-                            if (tInfo != null && Utils.IsModuleOnTab(tInfo.TabID))
-                            {
-                                
+							var dnnqa = new DnnqaController();
+							var tInfo = Utils.GetTabFromUrl(portalSettings);
+							
+							if (tInfo != null && Utils.IsModuleOnTab(tInfo.TabID))
+							{
+								
 
-                                var match = questionRegEx.Match(url);
-                                String relativePath;
-                                if (match.Success)
-                                {
-                                    var questionId = Int32.Parse(match.Groups[1].Value);
-                                    questionTitle = match.Groups[2].Value;
-                                    if (tInfo != null)
-                                    {
+								var match = questionRegEx.Match(url);
+								String relativePath;
+								if (match.Success)
+								{
+									var questionId = Int32.Parse(match.Groups[1].Value);
+									questionTitle = match.Groups[2].Value;
+									if (tInfo != null)
+									{
 
-                                        QuestionInfo qInfo = dnnqa.GetQuestion(questionId, portalSettings.PortalId);
+										QuestionInfo qInfo = dnnqa.GetQuestion(questionId, portalSettings.PortalId);
+										var _groupLink = context.Request.QueryString["groupid"] ?? "0";
+										if (qInfo != null)
+										{
+											if (Utils.CreateFriendlySlug(qInfo.Title).ToLower() == questionTitle.ToLower())
+											{
+												relativePath = Links.ViewQuestion(questionId, tInfo.TabID, portalSettings, _groupLink == "0" ? 0 : int.Parse(_groupLink)).Replace("http://", "").Replace("https://", "").Replace(objPortalAlias.HTTPAlias.Contains("/") ? objPortalAlias.HTTPAlias.Substring(0, objPortalAlias.HTTPAlias.IndexOf("/")) : objPortalAlias.HTTPAlias, "");
 
-                                        if (qInfo != null)
-                                        {
-                                            if (Utils.CreateFriendlySlug(qInfo.Title).ToLower() == questionTitle.ToLower())
-                                            {
-                                                relativePath = Links.ViewQuestion(questionId, tInfo.TabID, portalSettings).Replace("http://", "").Replace("https://", "").Replace(objPortalAlias.HTTPAlias.Contains("/") ? objPortalAlias.HTTPAlias.Substring(0, objPortalAlias.HTTPAlias.IndexOf("/")) : objPortalAlias.HTTPAlias, "");
+												context.RewritePath(relativePath);
+												return;
+											}
+											context.Response.Status = "301 Moved Permanently";
+											context.Response.RedirectLocation = Links.ViewQuestion(questionId, qInfo.Title, tInfo, portalSettings, _groupLink == "0" ? 0 : int.Parse(_groupLink));
+										}
+									}
+								}
 
-                                                context.RewritePath(relativePath);
-                                                return;
-                                            }
-                                            context.Response.Status = "301 Moved Permanently";
-                                            context.Response.RedirectLocation = Links.ViewQuestion(questionId, qInfo.Title, tInfo, portalSettings);
-                                        }
-                                    }
-                                }
+								match = tagRegEx.Match(url);
+								if (match.Success)
+								{
+									tagName = match.Groups[1].Value;
+									tagName = tagName.Replace("-", " ");
+									relativePath = Links.ViewTaggedQuestions(tagName, tInfo.TabID, portalSettings).Replace("http://", "").Replace("https://", "").Replace(objPortalAlias.HTTPAlias.Contains("/") ? objPortalAlias.HTTPAlias.Substring(0, objPortalAlias.HTTPAlias.IndexOf("/")) : objPortalAlias.HTTPAlias, "");
 
-                                match = tagRegEx.Match(url);
-                                if (match.Success)
-                                {
-                                    tagName = match.Groups[1].Value;
-                                    tagName = tagName.Replace("-", " ");
-                                    relativePath = Links.ViewTaggedQuestions(tagName, tInfo.TabID, portalSettings).Replace("http://", "").Replace("https://", "").Replace(objPortalAlias.HTTPAlias.Contains("/") ? objPortalAlias.HTTPAlias.Substring(0, objPortalAlias.HTTPAlias.IndexOf("/")) : objPortalAlias.HTTPAlias, "");
+									context.RewritePath(relativePath);
+									return;
+								}
+							}
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				DotNetNuke.Services.Exceptions.Exceptions.LogException(ex);
+			}
+		}
 
-                                    context.RewritePath(relativePath);
-                                    return;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                DotNetNuke.Services.Exceptions.Exceptions.LogException(ex);
-            }
-        }
-
-    }
+	}
 }

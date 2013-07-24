@@ -110,6 +110,11 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 			get { return 1; }
 		}
 
+		private int GroupId
+		{
+			get { return (Request.QueryString["groupid"] == null) ? 0 : int.Parse(Request.QueryString["groupid"]); }
+		}
+
 		#endregion
 		
 		#region Constructors
@@ -324,7 +329,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 				e.Post.Title = objSecurity.InputFilter(e.Post.Title, PortalSecurity.FilterFlag.NoScripting | PortalSecurity.FilterFlag.NoAngleBrackets | PortalSecurity.FilterFlag.NoMarkup);
 				e.Post.Body = objSecurity.InputFilter(e.Post.Body, PortalSecurity.FilterFlag.NoScripting);
 
-				var objPost = Controller.AddPost(e.Post, ModuleContext.TabId);
+				var objPost = Controller.AddPost(e.Post, ModuleContext.TabId,GroupId);
 				Controller.UpdatePost(objPost, ModuleContext.TabId);
 
 				// subscribe user
@@ -358,7 +363,10 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 
 				// if we ever allow moderation/approval to be enabled, this needs to respect that.
 				var cntJournal = new Journal();
-				var questionUrl = Links.ViewQuestion(objPost.PostId, objPost.Title, ModuleContext.PortalSettings.ActiveTab, ModuleContext.PortalSettings);
+
+				var _groupLink = Request.QueryString["groupid"] ?? "0";
+				var questionUrl = Links.ViewQuestion(objPost.PostId, objPost.Title, ModuleContext.PortalSettings.ActiveTab,
+					ModuleContext.PortalSettings, _groupLink == "0" ? 0 : int.Parse(_groupLink));
 
 				cntJournal.AddQuestionToJournal(objPost, objPost.Title, ModuleContext.PortalId, ModuleContext.PortalSettings.UserId, questionUrl);
 				Response.Redirect(questionUrl, false);

@@ -137,6 +137,11 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 			get { return 1; }
 		}
 
+		private int GroupId
+		{
+			get { return (Request.QueryString["groupid"] == null) ? 0 : int.Parse(Request.QueryString["groupid"]); }
+		}
+
 		#endregion
 
 		#region Constructors
@@ -191,7 +196,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 				var synonymCount = 0;
 
 				var urlTerm =
-					(from t in Controller.GetTermsByContentType(ModuleContext.PortalId, ModuleContext.ModuleId, VocabularyId)
+					(from t in Controller.GetTermsByContentType(ModuleContext.PortalId, ModuleContext.ModuleId, VocabularyId, GroupId)
 					 where t.Name.ToLower() == Tag.ToLower()
 					 select t).SingleOrDefault();
 
@@ -213,7 +218,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 					{
 						var synonym = objSynonym;        
 
-						var termTerm = (from t in Controller.GetTermsByContentType(ModuleContext.PortalId, ModuleContext.ModuleId, VocabularyId)
+						var termTerm = (from t in Controller.GetTermsByContentType(ModuleContext.PortalId, ModuleContext.ModuleId, VocabularyId, GroupId)
 										where t.TermId == synonym.RelatedTermId
 										select t).SingleOrDefault();
 
@@ -342,7 +347,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 			// because a term may not be assigned to a question (and therefore not available via content type), we need to get the core term (we know it exists at core level @)
 			var objTermInfo = new TermInfo();
 
-			var termTerm = (from t in Controller.GetTermsByContentType(ModuleContext.PortalId, ModuleContext.ModuleId, VocabularyId)
+			var termTerm = (from t in Controller.GetTermsByContentType(ModuleContext.PortalId, ModuleContext.ModuleId, VocabularyId, GroupId)
 							 where t.TermId == e.TermSynonym.RelatedTermId
 							 select t).SingleOrDefault();
 
@@ -376,6 +381,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 			{
 				e.Tags.ModContext = ModuleContext;
                 e.Tags.ModuleTab = ModuleContext.PortalSettings.ActiveTab;
+				e.Tags.GroupId = GroupId;
 				e.Tags.DataSource = colTerms;
 				e.Tags.DataBind();
 			}

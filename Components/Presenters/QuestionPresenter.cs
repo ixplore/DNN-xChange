@@ -171,6 +171,11 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 			get { return 1; }
 		}
 
+		private int GroupId
+		{
+			get { return (Request.QueryString["groupid"] == null) ? 0 : int.Parse(Request.QueryString["groupid"]); }
+		}
+
 		#endregion
 
 		#region Constructors
@@ -364,6 +369,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 
 			e.TagsControl.ModContext = ModuleContext;
 			e.TagsControl.ModuleTab = ModuleContext.PortalSettings.ActiveTab;
+			e.TagsControl.GroupId = GroupId;
 			e.TagsControl.DataSource = View.Model.Question.QaTerms(VocabularyId);
 			e.TagsControl.DataBind();
 
@@ -709,7 +715,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 				var objSecurity = new PortalSecurity();
 				e.NewPost.Body = objSecurity.InputFilter(e.NewPost.Body, PortalSecurity.FilterFlag.NoScripting);
 
-				e.NewPost = Controller.AddPost(e.NewPost, ModuleContext.TabId);
+				e.NewPost = Controller.AddPost(e.NewPost, ModuleContext.TabId,GroupId);
 
 				var objScoreLog = new UserScoreLogInfo
 				{
@@ -727,7 +733,9 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 
 				// if we ever allow moderation/approval to be enabled, this needs to respect that.
 				var cntJournal = new Journal();
-				var questionUrl =Links.ViewQuestion(QuestionID, View.Model.Question.Title, ModuleContext.PortalSettings.ActiveTab, ModuleContext.PortalSettings);
+				var _groupLink = Request.QueryString["groupid"] ?? "0";
+				var questionUrl =Links.ViewQuestion(QuestionID, View.Model.Question.Title, ModuleContext.PortalSettings.ActiveTab,
+					ModuleContext.PortalSettings, _groupLink == "0" ? 0 : int.Parse(_groupLink));
 				cntJournal.AddAnswerToJournal(e.NewPost, View.Model.Question.Title, ModuleContext.PortalId, ModuleContext.PortalSettings.UserId, questionUrl);
 				Response.Redirect(questionUrl, true);
 			} 
@@ -825,7 +833,9 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 			}
 			
 			//TODO: CP - Journal Integration once accepted answer is in build.'
-			Response.Redirect(Links.ViewQuestion(QuestionID, View.Model.Question.Title, ModuleContext.PortalSettings.ActiveTab, ModuleContext.PortalSettings), true);
+			var _groupLink = Request.QueryString["groupid"] ?? "0";
+			Response.Redirect(Links.ViewQuestion(QuestionID, View.Model.Question.Title, ModuleContext.PortalSettings.ActiveTab, 
+				ModuleContext.PortalSettings, _groupLink == "0" ? 0 : int.Parse(_groupLink)), true);
 		}
 
 		/// <summary>
@@ -879,10 +889,11 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 				if (objEntry != null)
 				{
 					Controller.DeletePost(e.ModerationLog.PostId, objEntry.ParentId, ModuleContext.PortalId, objEntry.ContentItemId, true, ModuleContext.ModuleId);
+					var _groupLink = Request.QueryString["groupid"] ?? "0";
 					Response.Redirect(
 						e.ModerationLog.PostId == View.Model.Question.PostId
-							? Links.Home(ModuleContext.TabId)
-							: Links.ViewQuestion(View.Model.Question.PostId, ModuleContext.TabId, ModuleContext.PortalSettings),
+							? Links.Home(ModuleContext.TabId, int.Parse(_groupLink))
+							: Links.ViewQuestion(View.Model.Question.PostId, ModuleContext.TabId, ModuleContext.PortalSettings, _groupLink == "0" ? 0 : int.Parse(_groupLink)),
 						false);
 					//System.Web.HttpContext.Current.ApplicationInstance.CompleteRequest();
 				}

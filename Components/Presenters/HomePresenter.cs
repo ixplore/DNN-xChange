@@ -152,7 +152,12 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 		private int VocabularyId
 		{
 			get { return 1; }
-		}	
+		}
+
+		private int GroupId
+		{
+			get { return (Request.QueryString["groupid"] == null) ? 0 : int.Parse(Request.QueryString["groupid"]); }
+		}
 
 		#endregion
 
@@ -205,7 +210,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 				var objFlagHomeRemovalThreshold = ThresholdCollection.Single(s => s.Key == Constants.OpThresholds.PostFlagCompleteCount.ToString());
 				var objMinHomeScore = ThresholdCollection.Single(s => s.Key == Constants.OpThresholds.QuestionHomeMinScore.ToString());
 
-				var colModuleTags = Controller.GetTermsByContentType(ModuleContext.PortalId, ModuleContext.ModuleId, VocabularyId);
+				var colModuleTags = Controller.GetTermsByContentType(ModuleContext.PortalId, ModuleContext.ModuleId, VocabularyId, GroupId);
 
 				IEnumerable<TermInfo> colTags;
 				switch (TagTimeFrame)
@@ -223,8 +228,9 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 						colTags = (from t in colModuleTags where t.TotalTermUsage > 0 select t);
 						break;
 				}
-
-				View.Model.LatestQuestions = Controller.GetHomeQuestions(ModuleContext.ModuleId, QuestionPageSize, objFlagHomeRemovalThreshold.Value, objMinHomeScore.Value);
+				//Request.QueryString("groupid")
+				var groupId = Request.QueryString["groupid"] ?? "0";
+				View.Model.LatestQuestions = Controller.GetHomeQuestions(ModuleContext.ModuleId, QuestionPageSize, objFlagHomeRemovalThreshold.Value, objMinHomeScore.Value, GroupId);
 				View.Model.LatestTerms = Sorting.GetHomeTermCollection(TagPageSize, TagTimeFrame, colTags).ToList();
 				View.ItemDataBound += ItemDataBound;
 				View.TagItemDataBound += TagItemDataBound;
@@ -236,7 +242,6 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 			{
 				ProcessModuleLoadException(exc);
 			}
-			
 		}
 
 		/// <summary>
@@ -249,7 +254,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 			var control = (Control)sender;
 
 			e.TitleLink.Text = e.ObjQuestion.Title;
-			e.TitleLink.NavigateUrl = Links.ViewQuestion(e.ObjQuestion.PostId, e.ObjQuestion.Title, ModuleContext.PortalSettings.ActiveTab, ModuleContext.PortalSettings);
+			e.TitleLink.NavigateUrl = Links.ViewQuestion(e.ObjQuestion.PostId, e.ObjQuestion.Title, ModuleContext.PortalSettings.ActiveTab, ModuleContext.PortalSettings, GroupId);
 
 			if (e.ObjQuestion.TotalAnswers > 0)
 			{
@@ -272,6 +277,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 
 			e.Tags.ModContext = ModuleContext;
 			e.Tags.ModuleTab = ModuleContext.PortalSettings.ActiveTab;
+			e.Tags.GroupId = GroupId;
 			e.Tags.DataSource = e.ObjQuestion.QaTerms(VocabularyId);
 			e.Tags.DataBind();
 
@@ -295,6 +301,7 @@ namespace DotNetNuke.DNNQA.Components.Presenters
 
 			e.TagControl.ModContext = ModuleContext;
 			e.TagControl.ModuleTab = ModuleContext.PortalSettings.ActiveTab;
+			e.TagControl.GroupId = GroupId;
 			e.TagControl.DataSource = colTerms;
 			e.TagControl.CountMode = TagTimeFrame;			
 			e.TagControl.DataBind();
