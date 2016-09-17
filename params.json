@@ -1,0 +1,6 @@
+{
+  "name": "Dnn-xchange",
+  "tagline": "DNN xChange is a Q&A module and more! ",
+  "body": "# DNN xChange - Moved from [Codeplex](https://dnnxchange.codeplex.com/)\r\n\r\nDNN xChange is a Q&A module and more! The new release introduces tight integration with DNN Social Groups, improves profile integration. We are currently working on improving and modernizing UI.\r\nWe are looking for Web designers (HTML5/CSS3/jQuery) to improve on the DNN xChange UI.\r\n## Key features:\r\n* Profile integration \r\n* Journal integration \r\n* Social Groups integration \r\n* Tags based on Core Taxonomy \r\n* Tag Synonyms \r\n* Tag Suggest when adding question \r\n* Question Suggest: Questions with similar titles \r\n* Subscriptions to Questions by Tag \r\n* Answer Notifications \r\n* Comments \r\n* Voting up and down \r\n* Social sharing (Google+, Tweeter, LinkedIn, Facebook) \r\n* Flagging inappropriate questions/answers \r\n* Configurable Scoring \r\n* Customisable Privilege assignment \r\n* Top Questions, Unanswered Questions \r\n* My Dashboard \r\n* Recent Tags \r\n* Badges.......coming soon! \r\n\r\nDevelopers and Designers are needed! ",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
